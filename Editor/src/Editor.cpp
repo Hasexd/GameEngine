@@ -1,4 +1,5 @@
 #include "Editor.h"
+#include "Transform.h"
 
 #include <print>
 
@@ -11,7 +12,7 @@ namespace
 }
 
 Editor::Editor():
-	m_Window(nullptr, glfwDestroyWindow)
+	m_Window(nullptr, glfwDestroyWindow), m_Running(false), m_Width(1920), m_Height(1080)
 {
 	glfwSetErrorCallback(ErrorCallback);
 
@@ -25,9 +26,6 @@ Editor::Editor():
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-	m_Width = 1920;
-	m_Height = 1080;
 
 	m_Window.reset(glfwCreateWindow(m_Width, m_Height, "Engine Editor", nullptr, nullptr));
 
@@ -44,10 +42,23 @@ Editor::Editor():
 	glfwSwapInterval(1);
 
 	SetWindowCallbacks();
+
+	m_Running = true;
+
+	m_Player = m_ECS.CreateEntity();
+
+	m_ECS.AddComponent<Transform>(m_Player);
 }
 
 void Editor::Run()
 {
+	Transform* playerTransform = m_ECS.GetComponent<Transform>(m_Player);
+
+	if (playerTransform)
+	{
+		std::println("X: {}, Y: {}", playerTransform->X, playerTransform->Y);
+	}
+
 	while (m_Running)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

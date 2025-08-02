@@ -1,8 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#include "ECS.h"
+
 
 class Editor
 {
@@ -16,4 +19,7 @@ private:
 	bool m_Running = true;
 	uint32_t m_Width;
 	uint32_t m_Height;
+
+	ECS m_ECS;
+	Entity m_Player;
 };
