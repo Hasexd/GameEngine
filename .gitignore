@@ -44,3 +44,7 @@ out/
 .vs/
 bin-int/
 bin/
+.vcxproj
+.vcxproj.filters
+.vcxproj.user
+.sln
