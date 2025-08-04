@@ -10,7 +10,10 @@ project "Core"
     files
     {
         "src/**.h",
-        "src/**.cpp"
+        "src/**.cpp",
+        "vendor/glm/*/**.hpp",
+        "vendor/glm/*/**.h",
+        "vendor/glm/*/**.inl"
     }
 
     includedirs

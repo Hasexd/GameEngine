@@ -12,9 +12,11 @@ class Editor
 {
 public:
 	Editor();
+	~Editor();
 	void Run();
 private:
 	void SetWindowCallbacks();
+	void RenderImGui();
 private:
 	std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> m_Window;
 	bool m_Running = true;

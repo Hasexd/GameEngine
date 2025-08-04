@@ -2,6 +2,9 @@
 #include "Transform.h"
 
 #include <print>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 namespace
 {
@@ -26,6 +29,7 @@ Editor::Editor():
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 	m_Window.reset(glfwCreateWindow(m_Width, m_Height, "Engine Editor", nullptr, nullptr));
 
@@ -43,6 +47,18 @@ Editor::Editor():
 
 	SetWindowCallbacks();
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(m_Window.get(), true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+
 	m_Running = true;
 }
 
@@ -51,11 +67,39 @@ void Editor::Run()
 	while (m_Running)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glfwSwapBuffers(m_Window.get());
 		glfwPollEvents();
-	}
 
-	glfwTerminate();
+		RenderImGui();
+
+		glfwSwapBuffers(m_Window.get());
+	}
+}
+
+void Editor::RenderImGui()
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+
+	ImGui::Begin("Viewport");
+	ImGui::End();
+
+	ImGui::Begin("Scene Hierarchy");
+	ImGui::End();
+
+	ImGui::Begin("Inspector");
+	ImGui::End();
+
+	ImGui::Begin("Assets");
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	ImGui::UpdatePlatformWindows();
+	ImGui::RenderPlatformWindowsDefault();
+	glfwMakeContextCurrent(m_Window.get());
 }
 
 void Editor::SetWindowCallbacks()
@@ -78,4 +122,16 @@ void Editor::SetWindowCallbacks()
 			}
 			glViewport(0, 0, width, height);
 		});
+}
+
+Editor::~Editor()
+{
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	if(m_Window)
+		m_Window.reset();
+
+	glfwTerminate();
 }

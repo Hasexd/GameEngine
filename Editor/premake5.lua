@@ -12,7 +12,9 @@ project "Editor"
         "src/**.h",
         "src/**.cpp",
         "vendor/glad/src/**.c",
-        "vendor/glfw/src/**.c"
+        "vendor/glfw/src/**.c",
+        "vendor/imgui/**.h",
+        "vendor/imgui/**.cpp",
     }
 
     includedirs
@@ -21,7 +23,8 @@ project "Editor"
         "../Core/src",
         "../Core/vendor/glm",
         "vendor/glfw/include",
-        "vendor/glad/include"
+        "vendor/glad/include",
+        "vendor/imgui/"
     }
 
     links
