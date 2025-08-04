@@ -3,7 +3,7 @@
 
 Entity ECS::CreateEntity()
 {
-	Entity entity = UUID::GenerateUUIDV4();
+	Entity entity = UUID::GenerateUUID();
 	m_Entities.push_back(entity);
 	return entity;
 }
