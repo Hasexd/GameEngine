@@ -1,4 +1,5 @@
 project "Editor"
+   location "src"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++23"
@@ -37,6 +38,12 @@ project "Editor"
     {
         "_GLFW_WIN32",
         "_CRT_SECURE_NO_WARNINGS",
+    }
+
+    vpaths
+    {
+        ["Headers"] = "src/**.h",
+        ["Sources"] = "src/*.cpp"
     }
 
     filter "system:windows"

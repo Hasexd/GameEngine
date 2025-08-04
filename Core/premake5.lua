@@ -1,4 +1,5 @@
 project "Core"
+    location "src"
     kind "StaticLib"
     language "C++"
     cppdialect "C++23"
@@ -20,6 +21,12 @@ project "Core"
     {
         "src",
         "vendor/glm"
+    }
+
+    vpaths
+    {
+        ["Headers"] = "src/**.h",
+        ["Sources"] = "src/*.cpp"
     }
 
     filter "system:windows"
