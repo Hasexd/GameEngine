@@ -64,6 +64,19 @@ Editor::Editor():
 
 void Editor::Run()
 {
+	Object player(m_ECS);
+	player.AddComponent<Transform>();
+
+	if (player.HasComponent<Transform>())
+	{
+		Transform* playerTransform = player.GetComponent<Transform>();
+
+		playerTransform->X = 5.0f;
+		playerTransform->Y = 10.0f;
+
+		std::println("Player Position: ({}, {})", playerTransform->X, playerTransform->Y);
+	}
+
 	while (m_Running)
 	{
 		glfwPollEvents();
