@@ -16,6 +16,12 @@ public:
 
 	template<typename T>
 	T* GetComponent(Entity entity);
+
+	template<typename T>
+	bool HasComponent(Entity entity) const;
+
+	template<typename T>
+	void RemoveComponent(Entity entity);
 private:
 	std::unordered_map<std::type_index,
 		std::unordered_map<Entity, std::unique_ptr<Component>>> m_Components;
@@ -40,14 +46,30 @@ T& ECS::AddComponent(Entity entity, Args&&... args)
 template<typename T>
 T* ECS::GetComponent(Entity entity)
 {
+	if (!HasComponent<T>(entity))
+		return nullptr;
+
+	return static_cast<T*>(m_Components.find(std::type_index(typeid(T)))->second.find(entity)->second.get());
+}
+
+template<typename T>
+bool ECS::HasComponent(Entity entity) const
+{
 	auto typeIt = m_Components.find(std::type_index(typeid(T)));
 
 	if (typeIt == m_Components.end())
-		return nullptr;
+		return false;
 
-	auto entityIt = typeIt->second.find(entity);
-	if (entityIt == typeIt->second.end())
-		return nullptr;
+	return typeIt->second.find(entity) != typeIt->second.end();
+}
 
-	return static_cast<T*>(entityIt->second.get());
+template<typename T>
+void ECS::RemoveComponent(Entity entity)
+{
+	auto typeIt = m_Components.find(std::type_index(typeid(T)));
+
+	if(typeIt == m_Components.end())
+		return;
+
+	typeIt->second.erase(entity);
 }

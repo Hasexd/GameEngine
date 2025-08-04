@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "ECS.h"
+#include "Object.h"
 
 
 class Editor
@@ -21,5 +22,4 @@ private:
 	uint32_t m_Height;
 
 	ECS m_ECS;
-	Entity m_Player;
 };

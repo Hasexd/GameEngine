@@ -44,21 +44,10 @@ Editor::Editor():
 	SetWindowCallbacks();
 
 	m_Running = true;
-
-	m_Player = m_ECS.CreateEntity();
-
-	m_ECS.AddComponent<Transform>(m_Player);
 }
 
 void Editor::Run()
 {
-	Transform* playerTransform = m_ECS.GetComponent<Transform>(m_Player);
-
-	if (playerTransform)
-	{
-		std::println("X: {}, Y: {}", playerTransform->X, playerTransform->Y);
-	}
-
 	while (m_Running)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
