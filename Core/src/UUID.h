@@ -1,9 +1,10 @@
 #pragma once
 
-#include <random>
 #include <string>
 
-namespace UUID
+using UUID = std::string;
+
+namespace Core
 {
-	std::string GenerateUUID();
+	UUID GenerateUUID();
 }

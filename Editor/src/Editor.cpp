@@ -64,25 +64,19 @@ Editor::Editor():
 
 void Editor::Run()
 {
-	Object player(m_ECS);
-	player.AddComponent<Transform>();
+	Core::Object player(m_ECS);
+	player.AddComponent<Core::Transform>(12.f, 4.f);
 
-	if (player.HasComponent<Transform>())
+	if (player.HasComponent<Core::Transform>())
 	{
-		Transform* playerTransform = player.GetComponent<Transform>();
-
-		playerTransform->X = 5.0f;
-		playerTransform->Y = 10.0f;
-
-		std::println("Player Position: ({}, {})", playerTransform->X, playerTransform->Y);
+		Core::Transform* playerTransform = player.GetComponent<Core::Transform>();
+		std::println("Player Position: ({:.2f}, {:.2f})", playerTransform->X, playerTransform->Y);
 	}
 
 	while (m_Running)
 	{
 		glfwPollEvents();
-
 		RenderImGui();
-
 		glfwSwapBuffers(m_Window.get());
 	}
 }

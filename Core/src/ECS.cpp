@@ -1,9 +1,11 @@
 #include "ECS.h"
-#include "UUID.h"
 
-Entity ECS::CreateEntity()
+namespace Core
 {
-	Entity entity = UUID::GenerateUUID();
-	m_Entities.push_back(entity);
-	return entity;
+	UUID ECS::CreateEntity()
+	{
+		UUID entity = Core::GenerateUUID();
+		m_Entities.push_back(entity);
+		return entity;
+	}
 }

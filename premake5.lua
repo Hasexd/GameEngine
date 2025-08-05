@@ -1,5 +1,5 @@
 workspace "2DEngine"
-    architecture "x64"
+    architecture "universal"
     startproject "Editor"
 
     configurations

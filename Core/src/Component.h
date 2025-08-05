@@ -1,10 +1,9 @@
 #pragma once
 
-#include "UUID.h"
-
-using Entity = std::string;
-
-struct Component
+namespace Core
 {
-	virtual ~Component() = default;
-};
+	struct Component
+	{
+		virtual ~Component() = default;
+	};
+}

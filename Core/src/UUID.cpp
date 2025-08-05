@@ -1,9 +1,11 @@
 #include "UUID.h"
-#include <sstream>
 
-namespace UUID
+#include <sstream>
+#include <random>
+
+namespace Core
 {
-	std::string GenerateUUID()
+	UUID GenerateUUID()
 	{
 		static thread_local std::random_device rd;
 		static thread_local std::mt19937 gen(rd());

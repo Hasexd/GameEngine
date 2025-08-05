@@ -23,5 +23,5 @@ private:
 	uint32_t m_Width;
 	uint32_t m_Height;
 
-	ECS m_ECS;
+	Core::ECS m_ECS;
 };
