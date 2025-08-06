@@ -1,5 +1,6 @@
 #include "Editor.h"
 #include "Transform.h"
+#include "Log.h"
 
 #include <print>
 #include <imgui.h>
@@ -10,7 +11,7 @@ namespace
 {
 	void ErrorCallback(int error, const char* description)
 	{
-		std::println("GLFW Error {}: {}", error, description);
+		LOG_ERROR("GLFW Error ({}): {}", error, description);
 	}
 }
 
@@ -21,7 +22,7 @@ Editor::Editor():
 
 	if (!glfwInit())
 	{
-		std::println("Failed to initialize GLFW");
+		LOG_CRITICAL("Failed to initialize GLFW");
 		return;
 	}
 
@@ -35,7 +36,7 @@ Editor::Editor():
 
 	if (!m_Window)
 	{
-		std::println("Failed to create a GLFW window");
+		LOG_CRITICAL("Failed to create a GLFW window");
 		glfwTerminate();
 		return;
 	}

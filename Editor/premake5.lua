@@ -62,16 +62,16 @@ project "Editor"
         }
 
     filter "configurations:Debug"
-        defines "EDITOR_DEBUG"
+        defines "DEBUG"
         runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
-        defines "EDITOR_RELEASE"
+        defines "RELEASE"
         runtime "Release"
         optimize "on"
 
     filter "configurations:Dist"
-        defines "EDITOR_DIST"
+        defines "DIST"
         runtime "Release"
         optimize "on"

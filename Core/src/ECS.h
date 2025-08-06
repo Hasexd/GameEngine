@@ -8,6 +8,7 @@
 
 #include "Component.h"
 #include "UUID.h"
+#include "Log.h"
 
 namespace Core
 {
