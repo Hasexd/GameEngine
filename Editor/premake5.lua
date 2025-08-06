@@ -12,7 +12,6 @@ project "Editor"
     {
         "src/**.h",
         "src/**.cpp",
-        "vendor/glad/src/**.c",
         "vendor/glfw/src/**.c",
         "vendor/imgui/**.h",
         "vendor/imgui/**.cpp",
@@ -24,8 +23,8 @@ project "Editor"
         "../Core/src",
         "../Core/vendor/glm",
         "vendor/glfw/include",
-        "vendor/glad/include",
-        "vendor/imgui/"
+        "vendor/imgui/",
+        "../Core/vendor/glad/include"
     }
 
     links
@@ -44,6 +43,14 @@ project "Editor"
     {
         ["Headers"] = "src/**.h",
         ["Sources"] = "src/*.cpp"
+    }
+
+    dependson
+    {
+        "Core",
+        "glfw",
+        "imgui",
+        "opengl32"
     }
 
     filter "system:windows"

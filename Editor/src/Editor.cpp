@@ -16,7 +16,7 @@ namespace
 }
 
 Editor::Editor():
-	m_Window(nullptr, glfwDestroyWindow), m_Running(false), m_Width(1920), m_Height(1080)
+	m_Window(nullptr, glfwDestroyWindow), m_Running(false), m_Width(1920), m_Height(1080), m_ViewportWidth(0), m_ViewportHeight(0)
 {
 	glfwSetErrorCallback(ErrorCallback);
 
@@ -42,7 +42,15 @@ Editor::Editor():
 	}
 
 	glfwMakeContextCurrent(m_Window.get());
-	gladLoadGL();
+
+	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+	{
+		LOG_CRITICAL("Failed to initialize GLAD");
+		m_Window.reset();
+		glfwTerminate();
+		return;
+	}
+
 	glfwSetWindowUserPointer(m_Window.get(), this);
 	glfwSwapInterval(1);
 
@@ -60,42 +68,51 @@ Editor::Editor():
 	ImGui_ImplGlfw_InitForOpenGL(m_Window.get(), true);
 	ImGui_ImplOpenGL3_Init("#version 460");
 
+	m_Renderer.Initialize();
+
 	m_Running = true;
 }
 
 void Editor::Run()
 {
-	Core::Object player(m_ECS);
-	player.AddComponent<Core::Transform>(12.f, 4.f);
-
-	if (player.HasComponent<Core::Transform>())
-	{
-		Core::Transform* playerTransform = player.GetComponent<Core::Transform>();
-		std::println("Player Position: ({:.2f}, {:.2f})", playerTransform->X, playerTransform->Y);
-	}
-
 	while (m_Running)
 	{
 		glfwPollEvents();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
 		RenderImGui();
+		m_Renderer.Render();
+
 		glfwSwapBuffers(m_Window.get());
 	}
 }
 
 void Editor::RenderImGui()
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::Begin("Viewport");
+	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+
+	if(m_ViewportWidth != static_cast<uint32_t>(viewportSize.x) || m_ViewportHeight != static_cast<uint32_t>(viewportSize.y))
+	{
+		m_ViewportWidth = static_cast<uint32_t>(viewportSize.x);
+		m_ViewportHeight = static_cast<uint32_t>(viewportSize.y);
+		m_Renderer.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+	}
+
+	ImGui::Image(static_cast<ImTextureID>(m_Renderer.GetTextureID()), viewportSize);
 	ImGui::End();
+	ImGui::PopStyleVar();
 
 	ImGui::Begin("Scene Hierarchy");
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
+	ImGui::ColorPicker3("Texture Color", m_Renderer.GetTextureColorArray(), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
 	ImGui::End();
 
 	ImGui::Begin("Assets");

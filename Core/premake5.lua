@@ -14,13 +14,25 @@ project "Core"
         "src/**.cpp",
         "vendor/glm/*/**.hpp",
         "vendor/glm/*/**.h",
-        "vendor/glm/*/**.inl"
+        "vendor/glm/*/**.inl",
+        "vendor/glad/src/**.c",
     }
 
     includedirs
     {
         "src",
-        "vendor/glm"
+        "vendor/glm",
+        "vendor/glad/include",
+    }
+
+    links
+    {
+        "opengl32"
+    }
+
+    dependson
+    {
+        "opengl32"
     }
 
     vpaths
