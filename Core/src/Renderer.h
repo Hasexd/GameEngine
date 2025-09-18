@@ -27,7 +27,8 @@ namespace Core
 		void SetViewportSize(uint32_t width, uint32_t height);
 
 		GLuint GetTextureID() const { return m_TextureID; }
-		
+
+
 	private:
 		void SetupFramebuffer();
 		glm::mat4 GetModelMatrix(const Transform& transform) const;
@@ -44,5 +45,6 @@ namespace Core
 		glm::mat4 m_ProjectionMatrix;
 
 		std::unique_ptr<Shader> m_Shader;
+
 	};
 }

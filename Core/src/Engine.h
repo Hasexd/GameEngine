@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <array>
+#include <memory>
 
 #include "ECS.h"
 #include "Renderer.h"
@@ -17,6 +18,7 @@ namespace Core
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		GLuint GetRenderTextureID() const { return m_Renderer.GetTextureID(); }
+		std::vector<Object>& GetObjects() { return m_Objects; }
 
 		void CreateTestCube();
 	private:

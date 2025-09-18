@@ -15,11 +15,13 @@ namespace Core
 
 		m_Renderer.Render(m_Objects);
 	}
+
 	void Engine::Initialize()
 	{
 		m_Renderer.Initialize();
 		CreateTestCube();
 	}
+
 	void Engine::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_Renderer.SetViewportSize(width, height);

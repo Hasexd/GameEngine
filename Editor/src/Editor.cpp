@@ -15,6 +15,7 @@ namespace
 	}
 }
 
+
 Editor::Editor():
 	m_Window(nullptr, glfwDestroyWindow), m_Running(false), m_Width(1920), m_Height(1080), m_ViewportWidth(0), m_ViewportHeight(0)
 {
@@ -109,9 +110,65 @@ void Editor::RenderImGui()
 	ImGui::PopStyleVar();
 
 	ImGui::Begin("Scene Hierarchy");
+
+	static bool isRenaming = false;
+	static Core::Object* renamingObject = nullptr;
+	static char renameBuffer[256] = "";
+
+	for (auto& object : m_Engine.GetObjects())
+	{
+		if (isRenaming && renamingObject == &object)
+		{
+			ImGui::SetKeyboardFocusHere();
+			if (ImGui::InputText("##Rename", renameBuffer, sizeof(renameBuffer),
+				ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+			{
+				std::string renamed = std::string(renameBuffer);
+
+				if (renamed == "")
+				{
+					renamed = object.GetName();
+				}
+
+				object.SetName(renamed);
+				isRenaming = false;
+				renamingObject = nullptr;
+			}
+
+			if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+			{
+				isRenaming = false;
+				renamingObject = nullptr;
+			}
+		}
+		else
+		{
+			bool isSelected = (m_SelectedObject == &object);
+			if (ImGui::Selectable(object.GetName().c_str(), isSelected, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					isRenaming = true;
+					renamingObject = &object;
+					strcpy(renameBuffer, object.GetName().c_str());
+				}
+				else
+				{
+					m_SelectedObject = &object;
+				}
+			}
+		}
+	}
+
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
+
+	if (m_SelectedObject)
+	{
+		ImGui::Text("Selected object: %s", m_SelectedObject->GetName().c_str());
+	}
+
 	ImGui::End();
 
 	ImGui::Begin("Assets");

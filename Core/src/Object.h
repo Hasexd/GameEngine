@@ -21,9 +21,13 @@ namespace Core
 
 		template<typename T>
 		void RemoveComponent();
+
+		std::string GetName() const { return m_Name; }
+		void SetName(const std::string& name) { m_Name = name; }
 	private:
 		ECS& m_ECS;
 		std::string m_UUID;
+		std::string m_Name;
 	};
 
 
