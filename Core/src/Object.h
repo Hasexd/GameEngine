@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ECS.h"
+#include "Transform.h"
 
 namespace Core
 {
@@ -13,7 +14,7 @@ namespace Core
 		T& AddComponent(Args&&... args);
 
 		template<typename T>
-		T* GetComponent();
+		T* GetComponent() const;
 
 		template<typename T>
 		bool HasComponent() const;
@@ -22,7 +23,7 @@ namespace Core
 		void RemoveComponent();
 	private:
 		ECS& m_ECS;
-		UUID m_UUID;
+		std::string m_UUID;
 	};
 
 
@@ -33,7 +34,7 @@ namespace Core
 	}
 
 	template<typename T>
-	T* Object::GetComponent()
+	T* Object::GetComponent() const
 	{
 		return m_ECS.GetComponent<T>(m_UUID);
 	}

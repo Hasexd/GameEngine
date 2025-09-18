@@ -5,9 +5,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "ECS.h"
-#include "Object.h"
-#include "Renderer.h"
+#include "Engine.h"
 
 
 class Editor
@@ -26,6 +24,5 @@ private:
 	uint32_t m_Width, m_Height;
 	uint32_t m_ViewportWidth, m_ViewportHeight;
 
-	Core::ECS m_ECS;
-	Core::Renderer m_Renderer;
+	Core::Engine m_Engine;
 };

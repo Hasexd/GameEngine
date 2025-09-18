@@ -68,7 +68,7 @@ Editor::Editor():
 	ImGui_ImplGlfw_InitForOpenGL(m_Window.get(), true);
 	ImGui_ImplOpenGL3_Init("#version 460");
 
-	m_Renderer.Initialize();
+	m_Engine.Initialize();
 
 	m_Running = true;
 }
@@ -83,7 +83,7 @@ void Editor::Run()
 		ImGui::NewFrame();
 
 		RenderImGui();
-		m_Renderer.Render();
+		m_Engine.OnUpdate();
 
 		glfwSwapBuffers(m_Window.get());
 	}
@@ -101,10 +101,10 @@ void Editor::RenderImGui()
 	{
 		m_ViewportWidth = static_cast<uint32_t>(viewportSize.x);
 		m_ViewportHeight = static_cast<uint32_t>(viewportSize.y);
-		m_Renderer.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+		m_Engine.OnViewportResize(m_ViewportWidth, m_ViewportHeight);
 	}
 
-	ImGui::Image(static_cast<ImTextureID>(m_Renderer.GetTextureID()), viewportSize);
+	ImGui::Image(static_cast<ImTextureID>(m_Engine.GetRenderTextureID()), viewportSize);
 	ImGui::End();
 	ImGui::PopStyleVar();
 
@@ -112,7 +112,6 @@ void Editor::RenderImGui()
 	ImGui::End();
 
 	ImGui::Begin("Inspector");
-	ImGui::ColorPicker3("Texture Color", m_Renderer.GetTextureColorArray(), ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
 	ImGui::End();
 
 	ImGui::Begin("Assets");

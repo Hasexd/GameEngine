@@ -38,7 +38,7 @@ project "Core"
     vpaths
     {
         ["Headers"] = "src/**.h",
-        ["Sources"] = "src/*.cpp"
+        ["Sources"] = "src/*.cpp",
     }
 
     filter "system:windows"

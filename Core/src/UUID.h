@@ -2,9 +2,8 @@
 
 #include <string>
 
-using UUID = std::string;
 
 namespace Core
 {
-	UUID GenerateUUID();
+	std::string GenerateUUID();
 }

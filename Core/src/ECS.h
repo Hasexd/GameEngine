@@ -5,6 +5,7 @@
 #include <typeindex>
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "Component.h"
 #include "UUID.h"
@@ -15,29 +16,29 @@ namespace Core
 	class ECS
 	{
 	public:
-		UUID CreateEntity();
+		std::string CreateEntity();
 
 		template<typename T, typename... Args>
-		T& AddComponent(UUID entity, Args&&... args);
+		T& AddComponent(std::string entity, Args&&... args);
 
 		template<typename T>
-		T* GetComponent(UUID entity);
+		T* GetComponent(std::string entity);
 
 		template<typename T>
-		bool HasComponent(UUID entity) const;
+		bool HasComponent(std::string entity) const;
 
 		template<typename T>
-		void RemoveComponent(UUID entity);
+		void RemoveComponent(std::string entity);
 	private:
 		std::unordered_map<std::type_index,
-			std::unordered_map<UUID, std::unique_ptr<Core::Component>>> m_Components;
+			std::unordered_map<std::string, std::unique_ptr<Core::Component>>> m_Components;
 
-		std::vector<UUID> m_Entities;
+		std::vector<std::string> m_Entities;
 	};
 
 
 	template<typename T, typename... Args>
-	T& ECS::AddComponent(UUID entity, Args&&... args)
+	T& ECS::AddComponent(std::string entity, Args&&... args)
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
 
@@ -50,7 +51,7 @@ namespace Core
 	}
 
 	template<typename T>
-	T* ECS::GetComponent(UUID entity)
+	T* ECS::GetComponent(std::string entity)
 	{
 		if (!HasComponent<T>(entity))
 			return nullptr;
@@ -59,7 +60,7 @@ namespace Core
 	}
 
 	template<typename T>
-	bool ECS::HasComponent(UUID entity) const
+	bool ECS::HasComponent(std::string entity) const
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
 
@@ -72,7 +73,7 @@ namespace Core
 	}
 
 	template<typename T>
-	void ECS::RemoveComponent(UUID entity)
+	void ECS::RemoveComponent(std::string entity)
 	{
 		static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
 

@@ -5,7 +5,7 @@
 
 namespace Core
 {
-	UUID GenerateUUID()
+	std::string GenerateUUID()
 	{
 		static thread_local std::random_device rd;
 		static thread_local std::mt19937 gen(rd());
@@ -14,6 +14,7 @@ namespace Core
 
 		std::stringstream ss;
 		int i = 0;
+
 		ss << std::hex;
 
 		for (i = 0; i < 8; i++)

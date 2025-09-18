@@ -53,6 +53,12 @@ project "Editor"
         "opengl32"
     }
 
+    postbuildcommands
+    {
+        "{MKDIR} %{cfg.targetdir}/assets",
+        "{COPY} %{wks.location}/assets/* %{cfg.targetdir}/assets/"
+    }
+
     filter "system:windows"
         systemversion "latest"
 
