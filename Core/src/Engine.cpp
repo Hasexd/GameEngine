@@ -9,7 +9,7 @@ namespace Core
 			Transform* transform = m_Objects[0].GetComponent<Transform>();
 			if (transform)
 			{
-				transform->Rotation += 1.0f;
+				transform->RotationX += 1.0f;
 			}
 		}
 

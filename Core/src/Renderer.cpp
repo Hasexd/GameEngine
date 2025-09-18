@@ -102,8 +102,12 @@ namespace Core
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(transform.RotationX), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.RotationY), glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.RotationZ), glm::vec3(0.0f, 0.0f, 1.0f));
+
 		model = glm::translate(model, glm::vec3(transform.X, transform.Y, transform.Z));
-		model = glm::rotate(model, glm::radians(transform.Rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = model * rotationMatrix;
 		model = glm::translate(model, glm::vec3(transform.ScaleX, transform.ScaleY, transform.ScaleZ));
 
 		return model;
