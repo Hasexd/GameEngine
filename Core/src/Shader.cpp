@@ -50,6 +50,11 @@ namespace Core
 		glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 	}
 
+	void Shader::SetBool(const std::string& name, bool value) const
+	{
+		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), static_cast<int>(value));
+	}
+
 	std::string Shader::LoadShaderFromFile(const std::string& path)
 	{
 		std::string shaderCode;

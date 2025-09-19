@@ -22,7 +22,7 @@ namespace Core
 		~Renderer();
 
 		void Initialize();
-		void Render(const std::vector<std::shared_ptr<Object>>& objects);
+		void Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject = nullptr);
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 

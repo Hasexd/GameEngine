@@ -23,6 +23,7 @@ namespace Core
 		void SetMatrix4(const std::string& name, const glm::mat4& matrix) const;
 		void SetVec3(const std::string& name, const glm::vec3& value) const;
 		void SetFloat(const std::string& name, float value) const;
+		void SetBool(const std::string& name, bool value) const;
 
 	private:
 		std::string LoadShaderFromFile(const std::string& path);

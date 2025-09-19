@@ -2,7 +2,7 @@
 
 namespace Core
 {
-	void Engine::OnUpdate()
+	void Engine::OnUpdate(const std::shared_ptr<Object>& selectedObject)
 	{
 
 		Transform* transform = m_Objects[0]->GetComponent<Transform>();
@@ -11,7 +11,7 @@ namespace Core
 		transform->RotationY += 1.0f;
 		transform->RotationZ += 1.0f;
 
-		m_Renderer.Render(m_Objects);
+		m_Renderer.Render(m_Objects, selectedObject);
 	}
 
 	void Engine::Initialize()

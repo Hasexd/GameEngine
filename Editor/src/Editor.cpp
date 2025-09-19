@@ -84,7 +84,7 @@ void Editor::Run()
 		ImGui::NewFrame();
 
 		RenderImGui();
-		m_Engine.OnUpdate();
+		m_Engine.OnUpdate(m_SelectedObject);
 
 		glfwSwapBuffers(m_Window.get());
 	}

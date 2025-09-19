@@ -2,30 +2,50 @@
 
 namespace Core
 {
-	Cube::Cube(ECS& ecs):
-		Object(ecs) 
-	{
-		static float vertices[] = {
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+    Cube::Cube(ECS& ecs) :
+        Object(ecs)
+    {
+        static float vertices[] = {
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-		};
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-		static unsigned int indices[] = {
-			0, 1, 2,  2, 3, 0,
-			4, 5, 6,  6, 7, 4,
-			7, 3, 0,  0, 4, 7,
-			1, 5, 6,  6, 2, 1,
-			3, 2, 6,  6, 7, 3,
-			0, 1, 5,  5, 4, 0
-		};
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
 
-		AddComponent<Mesh>(vertices, sizeof(vertices) / sizeof(float), indices, sizeof(indices) / sizeof(unsigned int));
-	}
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+
+             -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+              0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+              0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+             -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+
+             -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+              0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+              0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+             -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        };
+
+        static unsigned int indices[] = {
+            0,  1,  2,   2,  3,  0,
+            4,  5,  6,   6,  7,  4,
+            8,  9,  10,  10, 11, 8,
+            12, 13, 14,  14, 15, 12,
+            16, 17, 18,  18, 19, 16,
+            20, 21, 22,  22, 23, 20
+        };
+
+        AddComponent<Mesh>(vertices, sizeof(vertices) / sizeof(float), indices, sizeof(indices) / sizeof(unsigned int));
+    }
 }

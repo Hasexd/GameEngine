@@ -14,7 +14,7 @@ namespace Core
 	class Engine
 	{
 	public:
-		void OnUpdate();
+		void OnUpdate(const std::shared_ptr<Object>& selectedObject = nullptr);
 		void Initialize();
 		void OnViewportResize(uint32_t width, uint32_t height);
 
