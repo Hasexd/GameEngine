@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "Object.h"
 #include "Cube.h"
+#include "Camera.h"
 
 namespace Core
 {
@@ -20,6 +21,8 @@ namespace Core
 
 		GLuint GetRenderTextureID() const { return m_Renderer.GetTextureID(); }
 		std::vector<std::shared_ptr<Object>>& GetObjects() { return m_Objects; }
+
+		void SetActiveCamera(const std::shared_ptr<Camera>& camera) { m_Renderer.SetActiveCamera(camera); };
 
 	private:
 		ECS m_ECS;

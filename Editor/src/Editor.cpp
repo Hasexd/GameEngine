@@ -16,7 +16,7 @@ namespace
 }
 
 
-Editor::Editor():
+Editor::Editor() :
 	m_Window(nullptr, glfwDestroyWindow), m_Running(false), m_Width(1920), m_Height(1080), m_ViewportWidth(0), m_ViewportHeight(0)
 {
 	glfwSetErrorCallback(ErrorCallback);
@@ -71,6 +71,9 @@ Editor::Editor():
 
 	m_Engine.Initialize();
 
+	m_EditorCamera = std::make_shared<Core::Camera>();
+	m_Engine.SetActiveCamera(m_EditorCamera);
+
 	m_Running = true;
 }
 
@@ -78,7 +81,13 @@ void Editor::Run()
 {
 	while (m_Running)
 	{
+		float currentFrame = glfwGetTime();
+		m_DeltaTime = currentFrame - m_LastFrame;
+		m_LastFrame = currentFrame;
+
 		glfwPollEvents();
+		ProcessInput();
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -90,6 +99,25 @@ void Editor::Run()
 	}
 }
 
+void Editor::ProcessInput()
+{
+	if (m_RightMousePressed && m_IsViewportHovered)
+	{
+		if (glfwGetKey(m_Window.get(), GLFW_KEY_W) == GLFW_PRESS)
+			m_EditorCamera->ProcessKeyboard(Core::Direction::FORWARD, m_DeltaTime);
+		if (glfwGetKey(m_Window.get(), GLFW_KEY_S) == GLFW_PRESS)
+			m_EditorCamera->ProcessKeyboard(Core::Direction::BACKWARD, m_DeltaTime);
+		if (glfwGetKey(m_Window.get(), GLFW_KEY_A) == GLFW_PRESS)
+			m_EditorCamera->ProcessKeyboard(Core::Direction::LEFT, m_DeltaTime);
+		if (glfwGetKey(m_Window.get(), GLFW_KEY_D) == GLFW_PRESS)
+			m_EditorCamera->ProcessKeyboard(Core::Direction::RIGHT, m_DeltaTime);
+		if (glfwGetKey(m_Window.get(), GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(m_Window.get(), GLFW_KEY_SPACE) == GLFW_PRESS)
+			m_EditorCamera->ProcessKeyboard(Core::Direction::UP, m_DeltaTime);
+		if (glfwGetKey(m_Window.get(), GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(m_Window.get(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			m_EditorCamera->ProcessKeyboard(Core::Direction::DOWN, m_DeltaTime);
+	}
+}
+
 void Editor::RenderImGui()
 {
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
@@ -98,12 +126,14 @@ void Editor::RenderImGui()
 	ImGui::Begin("Viewport");
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 
-	if(m_ViewportWidth != static_cast<uint32_t>(viewportSize.x) || m_ViewportHeight != static_cast<uint32_t>(viewportSize.y))
+	if (m_ViewportWidth != static_cast<uint32_t>(viewportSize.x) || m_ViewportHeight != static_cast<uint32_t>(viewportSize.y))
 	{
 		m_ViewportWidth = static_cast<uint32_t>(viewportSize.x);
 		m_ViewportHeight = static_cast<uint32_t>(viewportSize.y);
 		m_Engine.OnViewportResize(m_ViewportWidth, m_ViewportHeight);
 	}
+
+	m_IsViewportHovered = ImGui::IsWindowHovered();
 
 	ImGui::Image(static_cast<ImTextureID>(m_Engine.GetRenderTextureID()), viewportSize);
 	ImGui::End();
@@ -207,6 +237,77 @@ void Editor::SetWindowCallbacks()
 			}
 			glViewport(0, 0, width, height);
 		});
+
+	glfwSetMouseButtonCallback(m_Window.get(), [](GLFWwindow* window, int button, int action, int mods)
+		{
+			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
+			if (!editor) return;
+
+			if (button == GLFW_MOUSE_BUTTON_RIGHT)
+			{
+				if (action == GLFW_PRESS)
+				{
+					editor->m_RightMousePressed = true;
+					if (editor->m_IsViewportHovered)
+					{
+						glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+						editor->m_FirstMouse = true;
+					}
+				}
+				else if (action == GLFW_RELEASE)
+				{
+					editor->m_RightMousePressed = false;
+					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				}
+			}
+		});
+
+	glfwSetCursorPosCallback(m_Window.get(), [](GLFWwindow* window, double xpos, double ypos)
+		{
+			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
+
+			if (!editor)
+				return;
+
+			if (editor->m_RightMousePressed && editor->m_IsViewportHovered)
+			{
+				if (editor->m_FirstMouse)
+				{
+					editor->m_LastX = xpos;
+					editor->m_LastY = ypos;
+					editor->m_FirstMouse = false;
+				}
+
+				float xoffset = xpos - editor->m_LastX;
+				float yoffset = ypos - editor->m_LastY;
+
+				editor->m_LastX = xpos;
+				editor->m_LastY = ypos;
+
+				editor->m_EditorCamera->ProcessMouseMovement(xoffset, yoffset);
+			}
+		});
+
+	glfwSetScrollCallback(m_Window.get(), [](GLFWwindow* window, double xoffset, double yoffset)
+		{
+			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
+			if (!editor) return;
+
+			if (editor->m_IsViewportHovered)
+			{
+				editor->m_EditorCamera->ProcessMouseScroll(yoffset);
+			}
+		});
+
+	glfwSetKeyCallback(m_Window.get(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+			{
+				Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
+				if (editor)
+					editor->m_SelectedObject = nullptr;
+			}
+		});
 }
 
 Editor::~Editor()
@@ -215,7 +316,7 @@ Editor::~Editor()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-	if(m_Window)
+	if (m_Window)
 		m_Window.reset();
 
 	glfwTerminate();

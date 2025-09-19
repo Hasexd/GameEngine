@@ -9,14 +9,9 @@ namespace Core
 
 		m_Shader = std::make_unique<Shader>(FileUtils::GetShaderPath("vertex.glsl"), FileUtils::GetShaderPath("fragment.glsl"));
 
-		m_ViewMatrix = glm::lookAt(
-			glm::vec3(0.0f, 0.0f, 5.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)
-		);
 
 		m_ProjectionMatrix = glm::perspective(
-			glm::radians(45.0f),
+			45.0f,
 			(float)m_ViewportWidth / (float)m_ViewportHeight,
 			0.1f,
 			100.0f
@@ -27,6 +22,16 @@ namespace Core
 
 	void Renderer::Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject)
 	{
+		if (!m_ActiveCamera)
+			return;
+
+		m_ProjectionMatrix = glm::perspective(
+			glm::radians(m_ActiveCamera->FieldOfView),
+			(float)m_ViewportWidth / (float)m_ViewportHeight,
+			0.1f,
+			100.0f
+		);
+
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 		glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
 
@@ -36,7 +41,7 @@ namespace Core
 		glEnable(GL_STENCIL_TEST);
 
 		m_Shader->Use();
-		m_Shader->SetMatrix4("view", m_ViewMatrix);
+		m_Shader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
 		m_Shader->SetMatrix4("projection", m_ProjectionMatrix);
 
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -70,7 +75,6 @@ namespace Core
 				glBindVertexArray(0);
 			}
 		}
-
 
 		if (selectedObject)
 		{
@@ -154,11 +158,23 @@ namespace Core
 		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.RotationY), glm::vec3(0.0f, 1.0f, 0.0f));
 		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.RotationZ), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		model = glm::translate(model, glm::vec3(transform.X, transform.Y, transform.Z));
+		model = glm::translate(model, glm::vec3(transform.X, -transform.Y, transform.Z));
 		model = model * rotationMatrix;
 		model = glm::scale(model, glm::vec3(transform.ScaleX, transform.ScaleY, transform.ScaleZ));
 
 		return model;
+	}
+
+	void Renderer::SetActiveCamera(const std::shared_ptr<Camera>& camera)
+	{
+		m_ActiveCamera = camera;
+
+		m_ProjectionMatrix = glm::perspective(
+			glm::radians(m_ActiveCamera->FieldOfView),
+			(float)m_ViewportWidth / (float)m_ViewportHeight,
+			0.1f,
+			100.0f
+		);
 	}
 
 	Renderer::~Renderer()

@@ -19,6 +19,18 @@ namespace Core
 		m_Renderer.Initialize();
 
 		m_Objects.emplace_back(std::make_shared<Cube>(m_ECS));
+		m_Objects.emplace_back(std::make_shared<Cube>(m_ECS));
+
+		m_Objects[0]->SetName("Cube 1");
+		Transform* cubeTransform = m_Objects[0]->GetComponent<Transform>();
+		cubeTransform->Z = -5.0f;
+		cubeTransform->X = -2.0f;
+
+		m_Objects[1]->SetName("Cube 2");
+		cubeTransform = m_Objects[1]->GetComponent<Transform>();
+		cubeTransform->Z = -5.0f;
+		cubeTransform->X = 2.0f;
+
 	}
 
 	void Engine::OnViewportResize(uint32_t width, uint32_t height)

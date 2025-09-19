@@ -12,6 +12,7 @@
 #include "Mesh.h"
 #include "Log.h"
 #include "FileUtils.h"
+#include "Camera.h"
 
 namespace Core
 {
@@ -27,7 +28,7 @@ namespace Core
 		void SetViewportSize(uint32_t width, uint32_t height);
 
 		GLuint GetTextureID() const { return m_TextureID; }
-
+		void SetActiveCamera(const std::shared_ptr<Camera>& camera);
 
 	private:
 		void SetupFramebuffer();
@@ -41,8 +42,9 @@ namespace Core
 		GLuint m_TextureID;
 		GLuint m_DepthBufferID;
 
-		glm::mat4 m_ViewMatrix;
 		glm::mat4 m_ProjectionMatrix;
+
+		std::shared_ptr<Camera> m_ActiveCamera;
 
 		std::unique_ptr<Shader> m_Shader;
 
