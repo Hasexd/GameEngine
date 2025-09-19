@@ -1,4 +1,4 @@
-workspace "2DEngine"
+workspace "GameEngine"
     architecture "universal"
     startproject "Editor"
 

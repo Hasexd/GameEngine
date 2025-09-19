@@ -109,7 +109,7 @@ namespace Core
 
 		model = glm::translate(model, glm::vec3(transform.X, transform.Y, transform.Z));
 		model = model * rotationMatrix;
-		model = glm::translate(model, glm::vec3(transform.ScaleX, transform.ScaleY, transform.ScaleZ));
+		model = glm::scale(model, glm::vec3(transform.ScaleX, transform.ScaleY, transform.ScaleZ));
 
 		return model;
 	}

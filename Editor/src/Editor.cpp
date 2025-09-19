@@ -166,7 +166,12 @@ void Editor::RenderImGui()
 
 	if (m_SelectedObject)
 	{
+		Core::Transform* transform = m_SelectedObject->GetComponent<Core::Transform>();
+
 		ImGui::Text("Selected object: %s", m_SelectedObject->GetName().c_str());
+		ImGui::InputFloat3("Position", &transform->X);
+		ImGui::InputFloat3("Rotation", &transform->RotationX);
+		ImGui::InputFloat3("Scale", &transform->ScaleX);
 	}
 
 	ImGui::End();

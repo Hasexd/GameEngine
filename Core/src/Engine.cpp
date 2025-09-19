@@ -4,14 +4,12 @@ namespace Core
 {
 	void Engine::OnUpdate()
 	{
-		if (!m_Objects.empty())
-		{
-			Transform* transform = m_Objects[0].GetComponent<Transform>();
-			if (transform)
-			{
-				transform->RotationX += 1.0f;
-			}
-		}
+
+		Transform* transform = m_Objects[0].GetComponent<Transform>();
+
+		transform->RotationX += 1.0f;
+		transform->RotationY += 1.0f;
+		transform->RotationZ += 1.0f;
 
 		m_Renderer.Render(m_Objects);
 	}
