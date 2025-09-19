@@ -7,7 +7,7 @@ namespace Core
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		m_Shader = std::make_unique<Shader>(FileUtils::GetAssetPath("vertex.glsl"), FileUtils::GetAssetPath("fragment.glsl"));
+		m_Shader = std::make_unique<Shader>(FileUtils::GetShaderPath("vertex.glsl"), FileUtils::GetShaderPath("fragment.glsl"));
 
 		m_ViewMatrix = glm::lookAt(
 			glm::vec3(0.0f, 0.0f, 5.0f),
@@ -25,7 +25,7 @@ namespace Core
 		SetupFramebuffer();
 	}
 
-	void Renderer::Render(const std::vector<Object>& objects)
+	void Renderer::Render(const std::vector<std::shared_ptr<Object>>& objects)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 		glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
@@ -39,8 +39,8 @@ namespace Core
 
 		for (const auto& object : objects)
 		{
-			const Transform* transform = object.GetComponent<Transform>();
-			const Mesh* mesh = object.GetComponent<Mesh>();
+			const Transform* transform = object->GetComponent<Transform>();
+			const Mesh* mesh = object->GetComponent<Mesh>();
 
 			if (transform && mesh)
 			{

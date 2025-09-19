@@ -24,7 +24,7 @@ private:
 	uint32_t m_Width, m_Height;
 	uint32_t m_ViewportWidth, m_ViewportHeight;
 
-	Core::Object* m_SelectedObject = nullptr;
+	std::shared_ptr<Core::Object> m_SelectedObject = nullptr;
 
 	Core::Engine m_Engine;
 };

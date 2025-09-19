@@ -7,6 +7,7 @@
 #include "ECS.h"
 #include "Renderer.h"
 #include "Object.h"
+#include "Cube.h"
 
 namespace Core
 {
@@ -18,13 +19,12 @@ namespace Core
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		GLuint GetRenderTextureID() const { return m_Renderer.GetTextureID(); }
-		std::vector<Object>& GetObjects() { return m_Objects; }
+		std::vector<std::shared_ptr<Object>>& GetObjects() { return m_Objects; }
 
-		void CreateTestCube();
 	private:
 		ECS m_ECS;
 		Renderer m_Renderer;
 
-		std::vector<Object> m_Objects;
+		std::vector<std::shared_ptr<Object>> m_Objects;
 	};
 }

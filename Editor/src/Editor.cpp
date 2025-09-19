@@ -117,7 +117,7 @@ void Editor::RenderImGui()
 
 	for (auto& object : m_Engine.GetObjects())
 	{
-		if (isRenaming && renamingObject == &object)
+		if (isRenaming && renamingObject == object.get())
 		{
 			ImGui::SetKeyboardFocusHere();
 			if (ImGui::InputText("##Rename", renameBuffer, sizeof(renameBuffer),
@@ -127,10 +127,10 @@ void Editor::RenderImGui()
 
 				if (renamed == "")
 				{
-					renamed = object.GetName();
+					renamed = object->GetName();
 				}
 
-				object.SetName(renamed);
+				object->SetName(renamed);
 				isRenaming = false;
 				renamingObject = nullptr;
 			}
@@ -143,18 +143,18 @@ void Editor::RenderImGui()
 		}
 		else
 		{
-			bool isSelected = (m_SelectedObject == &object);
-			if (ImGui::Selectable(object.GetName().c_str(), isSelected, ImGuiSelectableFlags_AllowDoubleClick))
+			bool isSelected = (m_SelectedObject.get() == object.get());
+			if (ImGui::Selectable(object->GetName().c_str(), isSelected, ImGuiSelectableFlags_AllowDoubleClick))
 			{
 				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
 					isRenaming = true;
-					renamingObject = &object;
-					strcpy(renameBuffer, object.GetName().c_str());
+					renamingObject = object.get();
+					strcpy(renameBuffer, object->GetName().c_str());
 				}
 				else
 				{
-					m_SelectedObject = &object;
+					m_SelectedObject = object;
 				}
 			}
 		}

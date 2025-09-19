@@ -16,6 +16,7 @@ project "Core"
         "vendor/glm/*/**.h",
         "vendor/glm/*/**.inl",
         "vendor/glad/src/**.c",
+        "shaders/**.glsl"
     }
 
     includedirs
@@ -39,6 +40,13 @@ project "Core"
     {
         ["Headers"] = "src/**.h",
         ["Sources"] = "src/*.cpp",
+        ["Shaders"] = "shaders/**.glsl"
+    }
+
+    postbuildcommands
+    {
+        "{MKDIR} %{cfg.targetdir}/shaders",
+        "{COPY} %{prj.location}/../shaders/* %{cfg.targetdir}/shaders/"
     }
 
     filter "system:windows"
