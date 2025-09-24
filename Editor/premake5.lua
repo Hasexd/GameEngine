@@ -12,9 +12,6 @@ project "Editor"
     {
         "src/**.h",
         "src/**.cpp",
-        "vendor/glfw/src/**.c",
-        "vendor/imgui/**.h",
-        "vendor/imgui/**.cpp",
     }
 
     includedirs
@@ -22,9 +19,9 @@ project "Editor"
         "src",
         "../Core/src",
         "../Core/vendor/glm",
-        "vendor/glfw/include",
-        "vendor/imgui/",
-        "../Core/vendor/glad/include"
+        "../Core/vendor/glfw/include",
+        "../Core/vendor/glad/include",
+        "../Core/vendor/imgui",
     }
 
     links
@@ -33,42 +30,19 @@ project "Editor"
         "opengl32"
     }
 
-    defines
-    {
-        "_GLFW_WIN32",
-        "_CRT_SECURE_NO_WARNINGS",
-    }
-
     vpaths
     {
         ["Headers"] = "src/**.h",
         ["Sources"] = "src/*.cpp"
     }
 
-    dependson
+     dependson
     {
         "Core",
-        "glfw",
-        "imgui",
-        "opengl32"
     }
-
-    
     
     filter "system:windows"
         systemversion "latest"
-
-    filter "system:linux"
-        defines "_GLFW_X11"
-        links
-        {
-            "GL",
-            "X11",
-            "pthread",
-            "Xrandr",
-            "Xi",
-            "dl"
-        }
 
     filter "configurations:Debug"
         defines "DEBUG"

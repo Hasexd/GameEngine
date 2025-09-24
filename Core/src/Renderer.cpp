@@ -20,7 +20,7 @@ namespace Core
 		SetupFramebuffer();
 	}
 
-	void Renderer::Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject)
+	void Renderer::Render(const std::vector<std::shared_ptr<Object>>& objects)
 	{
 		if (!m_ActiveCamera)
 			return;
@@ -55,17 +55,9 @@ namespace Core
 
 			if (transform && mesh)
 			{
-				if (selectedObject == object)
-				{
-					glStencilFunc(GL_ALWAYS, 1, 0xFF);
-					glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-				}
-				else
-				{
-					glStencilFunc(GL_ALWAYS, 0, 0xFF);
-					glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-				}
-
+				glStencilFunc(GL_ALWAYS, 0, 0xFF);
+				glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+				
 				glm::mat4 modelMatrix = GetModelMatrix(*transform);
 				m_Shader->SetMatrix4("model", modelMatrix);
 				m_Shader->SetVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
@@ -76,7 +68,7 @@ namespace Core
 			}
 		}
 
-		if (selectedObject)
+		/*if (selectedObject)
 		{
 			const Transform* transform = selectedObject->GetComponent<Transform>();
 			const Mesh* mesh = selectedObject->GetComponent<Mesh>();
@@ -101,7 +93,7 @@ namespace Core
 
 				glEnable(GL_DEPTH_TEST);
 			}
-		}
+		}*/
 
 		glDisable(GL_STENCIL_TEST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

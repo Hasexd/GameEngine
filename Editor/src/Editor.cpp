@@ -1,323 +1,236 @@
 #include "Editor.h"
-#include "Transform.h"
-#include "Log.h"
-
-#include <print>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-namespace
-{
-	void ErrorCallback(int error, const char* description)
-	{
-		LOG_ERROR("GLFW Error ({}): {}", error, description);
-	}
-}
-
 
 Editor::Editor() :
-	m_Window(nullptr, glfwDestroyWindow), m_Running(false), m_Width(1920), m_Height(1080), m_ViewportWidth(0), m_ViewportHeight(0)
+    m_ViewportWidth(0), m_ViewportHeight(0)
 {
-	glfwSetErrorCallback(ErrorCallback);
+    m_Application.Initialize();
+    m_Application.GetWindowRef().AddEventListener(this);
 
-	if (!glfwInit())
-	{
-		LOG_CRITICAL("Failed to initialize GLFW");
-		return;
-	}
+    InitializeImGui();
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    m_EditorCamera = std::make_shared<Core::Camera>();
+    m_Application.SetActiveCamera(m_EditorCamera);
 
-	m_Window.reset(glfwCreateWindow(m_Width, m_Height, "Engine Editor", nullptr, nullptr));
+	Core::Input::SetWindow(&m_Application.GetWindowRef());
 
-	if (!m_Window)
-	{
-		LOG_CRITICAL("Failed to create a GLFW window");
-		glfwTerminate();
-		return;
-	}
+    m_Running = true;
+}
 
-	glfwMakeContextCurrent(m_Window.get());
+void Editor::InitializeImGui()
+{
+    GLFWwindow* window = m_Application.GetWindow();
 
-	if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-	{
-		LOG_CRITICAL("Failed to initialize GLAD");
-		m_Window.reset();
-		glfwTerminate();
-		return;
-	}
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
 
-	glfwSetWindowUserPointer(m_Window.get(), this);
-	glfwSwapInterval(1);
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-	SetWindowCallbacks();
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(m_Window.get(), true);
-	ImGui_ImplOpenGL3_Init("#version 460");
-
-	m_Engine.Initialize();
-
-	m_EditorCamera = std::make_shared<Core::Camera>();
-	m_Engine.SetActiveCamera(m_EditorCamera);
-
-	m_Running = true;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 460");
 }
 
 void Editor::Run()
 {
-	while (m_Running)
-	{
-		float currentFrame = glfwGetTime();
-		m_DeltaTime = currentFrame - m_LastFrame;
-		m_LastFrame = currentFrame;
+    while (m_Running)
+    {
+        float currentFrame = glfwGetTime();
+        m_DeltaTime = currentFrame - m_LastFrame;
+        m_LastFrame = currentFrame;
 
-		glfwPollEvents();
-		ProcessInput();
+        glfwPollEvents();
+        ProcessInput();
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-		RenderImGui();
-		m_Engine.OnUpdate(m_SelectedObject);
+        RenderImGui();
 
-		glfwSwapBuffers(m_Window.get());
-	}
+        m_Application.Update();
+        glfwSwapBuffers(m_Application.GetWindow());
+    }
 }
 
 void Editor::ProcessInput()
 {
-	if (m_RightMousePressed && m_IsViewportHovered)
-	{
-		if (glfwGetKey(m_Window.get(), GLFW_KEY_W) == GLFW_PRESS)
+    using namespace Core;
+
+    if (m_RightMousePressed)
+    {
+        if(Input::IsKeyPressed(KeyInput::W))
 			m_EditorCamera->ProcessKeyboard(Core::Direction::FORWARD, m_DeltaTime);
-		if (glfwGetKey(m_Window.get(), GLFW_KEY_S) == GLFW_PRESS)
+		if (Input::IsKeyPressed(KeyInput::S))
 			m_EditorCamera->ProcessKeyboard(Core::Direction::BACKWARD, m_DeltaTime);
-		if (glfwGetKey(m_Window.get(), GLFW_KEY_A) == GLFW_PRESS)
+		if (Input::IsKeyPressed(KeyInput::A))
 			m_EditorCamera->ProcessKeyboard(Core::Direction::LEFT, m_DeltaTime);
-		if (glfwGetKey(m_Window.get(), GLFW_KEY_D) == GLFW_PRESS)
+		if (Input::IsKeyPressed(KeyInput::D))
 			m_EditorCamera->ProcessKeyboard(Core::Direction::RIGHT, m_DeltaTime);
-		if (glfwGetKey(m_Window.get(), GLFW_KEY_E) == GLFW_PRESS || glfwGetKey(m_Window.get(), GLFW_KEY_SPACE) == GLFW_PRESS)
-			m_EditorCamera->ProcessKeyboard(Core::Direction::UP, m_DeltaTime);
-		if (glfwGetKey(m_Window.get(), GLFW_KEY_Q) == GLFW_PRESS || glfwGetKey(m_Window.get(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-			m_EditorCamera->ProcessKeyboard(Core::Direction::DOWN, m_DeltaTime);
-	}
+
+        if (Input::IsKeyPressed(KeyInput::ESCAPE))
+            m_SelectedObject = nullptr;
+    }
 }
 
 void Editor::RenderImGui()
 {
-	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	ImGui::Begin("Viewport");
-	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::Begin("Viewport");
 
-	if (m_ViewportWidth != static_cast<uint32_t>(viewportSize.x) || m_ViewportHeight != static_cast<uint32_t>(viewportSize.y))
-	{
-		m_ViewportWidth = static_cast<uint32_t>(viewportSize.x);
-		m_ViewportHeight = static_cast<uint32_t>(viewportSize.y);
-		m_Engine.OnViewportResize(m_ViewportWidth, m_ViewportHeight);
-	}
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
+    m_ViewportPosition = ImVec2(windowPos.x + contentRegionMin.x, windowPos.y + contentRegionMin.y);
 
-	m_IsViewportHovered = ImGui::IsWindowHovered();
+    ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 
-	ImGui::Image(static_cast<ImTextureID>(m_Engine.GetRenderTextureID()), viewportSize);
-	ImGui::End();
-	ImGui::PopStyleVar();
+    if (m_ViewportWidth != static_cast<uint32_t>(viewportSize.x) || m_ViewportHeight != static_cast<uint32_t>(viewportSize.y))
+    {
+        m_ViewportWidth = static_cast<uint32_t>(viewportSize.x);
+        m_ViewportHeight = static_cast<uint32_t>(viewportSize.y);
+        m_Application.OnViewportResize(m_ViewportWidth, m_ViewportHeight);
+    }
 
-	ImGui::Begin("Scene Hierarchy");
+    m_IsViewportHovered = ImGui::IsWindowHovered();
 
-	static bool isRenaming = false;
-	static Core::Object* renamingObject = nullptr;
-	static char renameBuffer[256] = "";
+    ImGui::Image(static_cast<ImTextureID>(m_Application.GetRenderTextureID()), viewportSize);
+    ImGui::End();
+    ImGui::PopStyleVar();
 
-	for (auto& object : m_Engine.GetObjects())
-	{
-		if (isRenaming && renamingObject == object.get())
-		{
-			ImGui::SetKeyboardFocusHere();
-			if (ImGui::InputText("##Rename", renameBuffer, sizeof(renameBuffer),
-				ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
-			{
-				std::string renamed = std::string(renameBuffer);
+    ImGui::Begin("Scene Hierarchy");
+    for (auto& object : m_Application.GetObjects())
+    {
+        bool isSelected = (m_SelectedObject.get() == object.get());
+        if (ImGui::Selectable(object->GetName().c_str(), isSelected))
+        {
+            m_SelectedObject = object;
+        }
+    }
+    ImGui::End();
 
-				if (renamed == "")
-				{
-					renamed = object->GetName();
-				}
+    ImGui::Begin("Inspector");
+    if (m_SelectedObject)
+    {
+        Core::Transform* transform = m_SelectedObject->GetComponent<Core::Transform>();
+        ImGui::Text("Selected object: %s", m_SelectedObject->GetName().c_str());
+        ImGui::InputFloat3("Position", &transform->X);
+        ImGui::InputFloat3("Rotation", &transform->RotationX);
+        ImGui::InputFloat3("Scale", &transform->ScaleX);
+    }
+    ImGui::End();
 
-				object->SetName(renamed);
-				isRenaming = false;
-				renamingObject = nullptr;
-			}
+    ImGui::Begin("Assets");
+    ImGui::End();
 
-			if (ImGui::IsKeyPressed(ImGuiKey_Escape))
-			{
-				isRenaming = false;
-				renamingObject = nullptr;
-			}
-		}
-		else
-		{
-			bool isSelected = (m_SelectedObject.get() == object.get());
-			if (ImGui::Selectable(object->GetName().c_str(), isSelected, ImGuiSelectableFlags_AllowDoubleClick))
-			{
-				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-				{
-					isRenaming = true;
-					renamingObject = object.get();
-					strcpy(renameBuffer, object->GetName().c_str());
-				}
-				else
-				{
-					m_SelectedObject = object;
-				}
-			}
-		}
-	}
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	ImGui::End();
-
-	ImGui::Begin("Inspector");
-
-	if (m_SelectedObject)
-	{
-		Core::Transform* transform = m_SelectedObject->GetComponent<Core::Transform>();
-
-		ImGui::Text("Selected object: %s", m_SelectedObject->GetName().c_str());
-		ImGui::InputFloat3("Position", &transform->X);
-		ImGui::InputFloat3("Rotation", &transform->RotationX);
-		ImGui::InputFloat3("Scale", &transform->ScaleX);
-	}
-
-	ImGui::End();
-
-	ImGui::Begin("Assets");
-	ImGui::End();
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	ImGui::UpdatePlatformWindows();
-	ImGui::RenderPlatformWindowsDefault();
-	glfwMakeContextCurrent(m_Window.get());
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
+    glfwMakeContextCurrent(m_Application.GetWindow());
 }
 
-void Editor::SetWindowCallbacks()
+void Editor::OnWindowClose()
 {
-	glfwSetWindowCloseCallback(m_Window.get(), [](GLFWwindow* window)
-		{
-			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
-			if (editor)
-				editor->m_Running = false;
-		});
+    m_Running = false;
+}
 
-	glfwSetFramebufferSizeCallback(m_Window.get(), [](GLFWwindow* window, int width, int height)
-		{
-			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
+void Editor::OnFramebufferSize(int width, int height)
+{
+    m_Width = static_cast<uint32_t>(width);
+    m_Height = static_cast<uint32_t>(height);
+}
 
-			if (editor)
-			{
-				editor->m_Width = static_cast<uint32_t>(width);
-				editor->m_Height = static_cast<uint32_t>(height);
-			}
-			glViewport(0, 0, width, height);
-		});
+void Editor::OnMouseButton(int button, int action, int mods)
+{
+    using namespace Core;
 
-	glfwSetMouseButtonCallback(m_Window.get(), [](GLFWwindow* window, int button, int action, int mods)
-		{
-			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
-			if (!editor) return;
+    if (Input::IsMouseButtonPressed(MouseInput::MOUSE_RIGHT))
+    {
+        m_RightMousePressed = true;
+        Core::Input::SetCursorMode(Core::CursorMode::DISABLED);
+        m_FirstMouse = true;
+    }
+    else if (Input::IsMouseButtonReleased(MouseInput::MOUSE_RIGHT))
+    {
+        m_RightMousePressed = false;
+		Core::Input::SetCursorMode(Core::CursorMode::NORMAL);
+    }
+    else if (Input::IsMouseButtonPressed(MouseInput::MOUSE_LEFT))
+    {
+        if (m_IsViewportHovered && !m_RightMousePressed)
+        {
+            double mouseX, mouseY;
+            glfwGetCursorPos(m_Application.GetWindow(), &mouseX, &mouseY);
 
-			if (button == GLFW_MOUSE_BUTTON_RIGHT)
-			{
-				if (action == GLFW_PRESS)
-				{
-					editor->m_RightMousePressed = true;
-					if (editor->m_IsViewportHovered)
-					{
-						glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-						editor->m_FirstMouse = true;
-					}
-				}
-				else if (action == GLFW_RELEASE)
-				{
-					editor->m_RightMousePressed = false;
-					glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				}
-			}
-		});
+            float viewportMouseX = mouseX - m_ViewportPosition.x;
+            float viewportMouseY = mouseY - m_ViewportPosition.y;
 
-	glfwSetCursorPosCallback(m_Window.get(), [](GLFWwindow* window, double xpos, double ypos)
-		{
-			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
+            if (viewportMouseX >= 0 && viewportMouseX < m_ViewportWidth &&
+                viewportMouseY >= 0 && viewportMouseY < m_ViewportHeight)
+            {
+                auto hit = m_Application.ScreenToWorldRaycast(
+                    viewportMouseX,
+                    viewportMouseY,
+                    m_ViewportWidth,
+                    m_ViewportHeight
+                );
 
-			if (!editor)
-				return;
+                if (hit.Hit)
+                    LOG_INFO("Hit object: {}\n", hit.Object->GetName());
+                else
+                    LOG_INFO("No object hit.");
 
-			if (editor->m_RightMousePressed && editor->m_IsViewportHovered)
-			{
-				if (editor->m_FirstMouse)
-				{
-					editor->m_LastX = xpos;
-					editor->m_LastY = ypos;
-					editor->m_FirstMouse = false;
-				}
+                m_SelectedObject = hit.Hit ? hit.Object : nullptr;
+            }
+        }
+    }
+}
 
-				float xoffset = xpos - editor->m_LastX;
-				float yoffset = ypos - editor->m_LastY;
+void Editor::OnCursorPos(double xpos, double ypos)
+{
+    if (!m_RightMousePressed) 
+        return;
 
-				editor->m_LastX = xpos;
-				editor->m_LastY = ypos;
+    if (m_FirstMouse)
+    {
+        m_LastX = xpos;
+        m_LastY = ypos;
+        m_FirstMouse = false;
+        return;
+    }
 
-				editor->m_EditorCamera->ProcessMouseMovement(xoffset, yoffset);
-			}
-		});
+    float xoffset = xpos - m_LastX;
+    float yoffset = ypos - m_LastY;
 
-	glfwSetScrollCallback(m_Window.get(), [](GLFWwindow* window, double xoffset, double yoffset)
-		{
-			Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
-			if (!editor) return;
+    m_LastX = xpos;
+    m_LastY = ypos;
 
-			if (editor->m_IsViewportHovered)
-			{
-				editor->m_EditorCamera->ProcessMouseScroll(yoffset);
-			}
-		});
+    m_EditorCamera->ProcessMouseMovement(xoffset, yoffset);
+}
 
-	glfwSetKeyCallback(m_Window.get(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			{
-				Editor* editor = static_cast<Editor*>(glfwGetWindowUserPointer(window));
-				if (editor)
-					editor->m_SelectedObject = nullptr;
-			}
-		});
+void Editor::OnScroll(double xoffset, double yoffset)
+{
+    if (m_IsViewportHovered)
+    {
+        m_EditorCamera->ProcessMouseScroll(yoffset);
+    }
+}
+
+void Editor::OnKey(int key, int scancode, int action, int mods)
+{
+    
 }
 
 Editor::~Editor()
 {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+    m_Application.GetWindowRef().RemoveEventListener(this);
 
-	if (m_Window)
-		m_Window.reset();
-
-	glfwTerminate();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }

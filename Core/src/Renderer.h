@@ -23,12 +23,14 @@ namespace Core
 		~Renderer();
 
 		void Initialize();
-		void Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject = nullptr);
+		void Render(const std::vector<std::shared_ptr<Object>>& objects);
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 
 		GLuint GetTextureID() const { return m_TextureID; }
+
 		void SetActiveCamera(const std::shared_ptr<Camera>& camera);
+		std::shared_ptr<Camera> GetActiveCamera() const { return m_ActiveCamera; }
 
 	private:
 		void SetupFramebuffer();

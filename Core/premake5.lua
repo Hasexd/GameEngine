@@ -16,6 +16,9 @@ project "Core"
         "vendor/glm/*/**.h",
         "vendor/glm/*/**.inl",
         "vendor/glad/src/**.c",
+        "vendor/glfw/src/**.c",
+        "vendor/imgui/**.h",
+        "vendor/imgui/**.cpp",
         "shaders/**.glsl"
     }
 
@@ -24,6 +27,8 @@ project "Core"
         "src",
         "vendor/glm",
         "vendor/glad/include",
+        "vendor/glfw/include",
+        "vendor/imgui",
     }
 
     links
@@ -33,7 +38,14 @@ project "Core"
 
     dependson
     {
-        "opengl32"
+        "opengl32",
+    }
+
+    defines
+    {
+        "_CRT_SECURE_NO_WARNINGS",
+        "_GLFW_WIN32",                        
+        "IMGUI_IMPL_OPENGL_LOADER_GLAD"  
     }
 
     vpaths
@@ -51,6 +63,18 @@ project "Core"
 
     filter "system:windows"
         systemversion "latest"
+
+    filter "system:linux"
+        defines "_GLFW_X11"
+        links
+        {
+            "GL",
+            "X11",
+            "pthread",
+            "Xrandr",
+            "Xi",
+            "dl"
+        }
 
     filter "configurations:Debug"
         defines "DEBUG"

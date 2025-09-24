@@ -4,6 +4,8 @@
 #include <gtc/matrix_transform.hpp>
 #include <algorithm>
 
+#include "Object.h"
+
 namespace Core
 {
 	enum class Direction
