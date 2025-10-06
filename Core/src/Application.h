@@ -58,7 +58,9 @@ namespace Core
 		std::future<void> m_FileWatcherFuture;
 
 		std::vector<std::shared_ptr<Object>> m_Objects;
+
 		std::vector<std::string> m_ModifiedShaderFiles;
+		std::atomic<bool> m_ShadersNeedReload = false;
 	};
 
 	template<typename T>

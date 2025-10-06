@@ -84,8 +84,6 @@ namespace Core
         return Raycast(origin, direction);
     }
 
-    
-
     void Application::RemoveObject(const std::shared_ptr<Object>& object)
     {
         auto it = std::find(m_Objects.begin(), m_Objects.end(), object);
@@ -112,10 +110,8 @@ namespace Core
                 }
                 else if (status == FileStatus::Modified)
                 {
-					size_t lastSlash = filePath.find_last_of("/\\");
-					std::string fileName = (lastSlash == std::string::npos) ? filePath : filePath.substr(lastSlash + 1);
-
-                    m_ModifiedShaderFiles.emplace_back(fileName);
+                    m_ModifiedShaderFiles.emplace_back(FileUtils::GetFileName(filePath));
+                    m_ShadersNeedReload = true;
                 }
                 else if (status == FileStatus::Deleted)
                 {
@@ -126,7 +122,14 @@ namespace Core
 
     void Application::ReloadShaders()
     {
-        LOG_INFO("Reloading modified shaders...");
+        if (!m_ShadersNeedReload)
+            return;
+
+        for (const std::string& shaderName : m_ModifiedShaderFiles)
+        {
+			LOG_INFO("Reloading shaders made with {}", shaderName);
+        }
+
     }
 
     Application::~Application()

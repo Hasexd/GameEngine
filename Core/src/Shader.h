@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "Log.h"
-
+#include "FileUtils.h"
 
 namespace Core
 {
@@ -25,15 +25,15 @@ namespace Core
 		void SetFloat(const std::string& name, float value) const;
 		void SetBool(const std::string& name, bool value) const;
 
-		std::string GetVertexPath() const { return m_VertexPath; }
-		std::string GetFragmentPath() const { return m_FragmentPath; }
+		std::string GetVertexShaderName() const { return m_VertexShaderName; }
+		std::string GetFragmentShaderName() const { return m_FragmentShaderName; }
 
 	private:
 		std::string LoadShaderFromFile(const std::string& path);
 		void CheckCompileErrors(GLuint shader, const std::string& type);
 
 		GLuint m_ID;
-		std::string m_VertexPath;
-		std::string m_FragmentPath;
+		std::string m_VertexShaderName;
+		std::string m_FragmentShaderName;
 	};
 }

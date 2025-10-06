@@ -4,8 +4,8 @@ namespace Core
 {
 	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 	{
-		m_VertexPath = vertexPath;
-		m_FragmentPath = fragmentPath;
+		m_VertexShaderName = FileUtils::GetFileName(vertexPath);
+		m_FragmentShaderName = FileUtils::GetFileName(fragmentPath);
 
 
 		std::string vertexCode = LoadShaderFromFile(vertexPath);

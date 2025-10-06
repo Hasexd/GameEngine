@@ -41,6 +41,13 @@ namespace Core
 #endif
 		}
 
+		static std::string GetFileName(const std::filesystem::path& path)
+		{
+			std::string fileString = path.string();
+			size_t lastSlash = fileString.find_last_of("/\\");
+			return (lastSlash == std::string::npos) ? fileString : fileString.substr(lastSlash + 1);
+		}
+
         static std::string GetShaderPath(const std::string& shaderName)
         {
             return GetCoreProjectDir() + "/shaders/" + shaderName;
