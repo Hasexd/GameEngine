@@ -13,8 +13,9 @@ namespace Core
         m_Window.Initialize(1920, 1080, "Engine Window");
         m_Renderer.Initialize();
 
-        AddObject(std::make_shared<Cube>(m_ECS));
-        AddObject(std::make_shared<Cube>(m_ECS));
+        AddObject<Cube>();
+        AddObject<Cube>();
+        AddObject<LightCube>();
 
         m_Objects[0]->SetName("Cube 1");
         Transform* cubeTransform = m_Objects[0]->GetComponent<Transform>();
@@ -25,6 +26,10 @@ namespace Core
         cubeTransform = m_Objects[1]->GetComponent<Transform>();
         cubeTransform->Z = -5.0f;
         cubeTransform->X = 2.0f;
+
+		m_Objects[2]->SetName("Light Cube");
+		cubeTransform = m_Objects[2]->GetComponent<Transform>();
+		cubeTransform->Z = -5.0f;
 
         SyncPhysicsWorld();
     }
@@ -72,11 +77,7 @@ namespace Core
         return Raycast(origin, direction);
     }
 
-    void Application::AddObject(const std::shared_ptr<Object>& object)
-    {
-        m_Objects.push_back(object);
-        m_PhysicsWorld.RegisterObject(object);
-    }
+    
 
     void Application::RemoveObject(const std::shared_ptr<Object>& object)
     {

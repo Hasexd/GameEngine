@@ -41,6 +41,15 @@ void Editor::Run()
         m_DeltaTime = currentFrame - m_LastFrame;
         m_LastFrame = currentFrame;
 
+        if (m_SelectedObject)
+        {
+            Core::Transform* transform = m_SelectedObject->GetComponent<Core::Transform>();
+
+            transform->RotationX += 100.0f * m_DeltaTime;
+			transform->RotationY += 100.0f * m_DeltaTime;
+			transform->RotationZ += 100.0f * m_DeltaTime;
+        }
+
         glfwPollEvents();
         ProcessInput();
 

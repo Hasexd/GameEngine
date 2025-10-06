@@ -13,6 +13,7 @@
 #include "Log.h"
 #include "FileUtils.h"
 #include "Camera.h"
+#include "LightCube.h"
 
 namespace Core
 {
@@ -34,7 +35,6 @@ namespace Core
 
 	private:
 		void SetupFramebuffer();
-		glm::mat4 GetModelMatrix(const Transform& transform) const;
 
 	private:
 		uint32_t m_ViewportWidth;
@@ -48,7 +48,6 @@ namespace Core
 
 		std::shared_ptr<Camera> m_ActiveCamera;
 
-		std::unique_ptr<Shader> m_Shader;
-
+		std::unordered_map<std::string, std::shared_ptr<Shader>> m_ShaderCache;
 	};
 }

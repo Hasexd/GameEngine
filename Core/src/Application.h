@@ -30,7 +30,10 @@ namespace Core
 		RaycastHit Raycast(const glm::vec3& origin, const glm::vec3& direction, float maxDistance = FLT_MAX);
 		RaycastHit ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight);
 
-		void AddObject(const std::shared_ptr<Object>& object);
+		template<typename T>
+		requires(std::is_base_of_v<Object, T>)
+		void AddObject();
+
 		void RemoveObject(const std::shared_ptr<Object>& object);
 
 		GLFWwindow* GetWindow() const { return m_Window.GetWindow(); }
@@ -46,4 +49,14 @@ namespace Core
 
 		std::vector<std::shared_ptr<Object>> m_Objects;
 	};
+
+	template<typename T>
+	requires(std::is_base_of_v<Object, T>)
+	void Application::AddObject()
+	{
+		std::shared_ptr<T> object = std::make_shared<T>(m_ECS);
+
+		m_Objects.emplace_back(object);
+		m_PhysicsWorld.RegisterObject(object);
+	}
 }

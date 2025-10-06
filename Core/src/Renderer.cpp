@@ -7,8 +7,11 @@ namespace Core
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		m_Shader = std::make_unique<Shader>(FileUtils::GetShaderPath("vertex.glsl"), FileUtils::GetShaderPath("fragment.glsl"));
+		auto objectShader = std::make_unique<Shader>(FileUtils::GetShaderPath("objectVert.glsl"), FileUtils::GetShaderPath("objectFrag.glsl"));
+		auto lightShader = std::make_unique<Shader>(FileUtils::GetShaderPath("objectVert.glsl"), FileUtils::GetShaderPath("lightFrag.glsl"));
 
+		m_ShaderCache["objectShader"] = std::move(objectShader);
+		m_ShaderCache["lightShader"] = std::move(lightShader);
 
 		m_ProjectionMatrix = glm::perspective(
 			45.0f,
@@ -35,67 +38,61 @@ namespace Core
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 		glViewport(0, 0, m_ViewportWidth, m_ViewportHeight);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-		glEnable(GL_STENCIL_TEST);
-
-		m_Shader->Use();
-		m_Shader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
-		m_Shader->SetMatrix4("projection", m_ProjectionMatrix);
-
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		glStencilFunc(GL_ALWAYS, 0, 0xFF);
-		m_Shader->SetBool("isOutlinePass", false);
 
 		for (const auto& object : objects)
 		{
-			const Transform* transform = object->GetComponent<Transform>();
-			const Mesh* mesh = object->GetComponent<Mesh>();
+			const bool isDrawable = object->HasComponent<Transform>() && object->HasComponent<Mesh>();
+			const bool isLight = std::dynamic_pointer_cast<LightCube>(object) != nullptr;
 
-			if (transform && mesh)
+			if (isDrawable && isLight)
 			{
-				glStencilFunc(GL_ALWAYS, 0, 0xFF);
-				glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-				
-				glm::mat4 modelMatrix = GetModelMatrix(*transform);
-				m_Shader->SetMatrix4("model", modelMatrix);
-				m_Shader->SetVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+				const auto& lightShader = m_ShaderCache.at("lightShader");
 
-				glBindVertexArray(mesh->VAO);
-				glDrawElements(GL_TRIANGLES, mesh->IndexCount, GL_UNSIGNED_INT, 0);
-				glBindVertexArray(0);
+				if (!lightShader)
+				{
+					LOG_CRITICAL("Light shader not found in the cache, unable to render.");
+					return;
+				}
+
+				glm::mat4 modelMatrix = object->GetModelMatrix();
+
+				lightShader->Use();
+
+				lightShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
+				lightShader->SetMatrix4("projection", m_ProjectionMatrix);
+				lightShader->SetMatrix4("model", modelMatrix);
+				lightShader->SetBool("isOutlinePass", false);
+
+				object->Draw();
+			} 
+			else if (isDrawable)
+			{
+				const auto& objShader = m_ShaderCache.at("objectShader");
+
+				if (!objShader)
+				{
+					LOG_CRITICAL("Object shader not found in the cache, unable to render.");
+					return;
+				}
+
+				glm::mat4 modelMatrix = object->GetModelMatrix();
+
+				objShader->Use();
+
+				objShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
+				objShader->SetMatrix4("projection", m_ProjectionMatrix);
+				objShader->SetMatrix4("model", modelMatrix);
+
+				objShader->SetBool("isOutlinePass", false);
+
+				objShader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+				objShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+
+				object->Draw();
 			}
 		}
-
-		/*if (selectedObject)
-		{
-			const Transform* transform = selectedObject->GetComponent<Transform>();
-			const Mesh* mesh = selectedObject->GetComponent<Mesh>();
-
-			if (transform && mesh)
-			{
-				glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-				glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-				glDisable(GL_DEPTH_TEST);
-
-				m_Shader->SetBool("isOutlinePass", true);
-				m_Shader->SetFloat("outlineWidth", 0.02f);
-				m_Shader->SetVec3("outlineColor", glm::vec3(1.0f, 0.5f, 0.0f));
-
-				glm::mat4 modelMatrix = GetModelMatrix(*transform);
-				m_Shader->SetMatrix4("model", modelMatrix);
-
-				glBindVertexArray(mesh->VAO);
-				glDrawElements(GL_TRIANGLES, mesh->IndexCount, GL_UNSIGNED_INT, 0);
-				glBindVertexArray(0);
-
-				glEnable(GL_DEPTH_TEST);
-			}
-		}*/
-
-		glDisable(GL_STENCIL_TEST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
@@ -140,21 +137,6 @@ namespace Core
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_DepthBufferID);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	glm::mat4 Renderer::GetModelMatrix(const Transform& transform) const
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-
-		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(transform.RotationX), glm::vec3(1.0f, 0.0f, 0.0f));
-		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.RotationY), glm::vec3(0.0f, 1.0f, 0.0f));
-		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(transform.RotationZ), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		model = glm::translate(model, glm::vec3(transform.X, -transform.Y, transform.Z));
-		model = model * rotationMatrix;
-		model = glm::scale(model, glm::vec3(transform.ScaleX, transform.ScaleY, transform.ScaleZ));
-
-		return model;
 	}
 
 	void Renderer::SetActiveCamera(const std::shared_ptr<Camera>& camera)

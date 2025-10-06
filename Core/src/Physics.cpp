@@ -2,10 +2,6 @@
 
 namespace Core
 {
-	namespace Physics
-	{
-
-	}
 	void PhysicsWorld::RegisterObject(const std::shared_ptr<Object>& object)
 	{
 		if (!object)

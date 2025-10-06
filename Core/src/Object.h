@@ -1,7 +1,12 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+
 #include "ECS.h"
 #include "Transform.h"
+#include "Mesh.h"
 
 namespace Core
 {
@@ -9,6 +14,7 @@ namespace Core
 	{
 	public:
 		Object(ECS& ecs);
+		virtual ~Object() = default;
 
 		template<typename T, typename... Args>
 		requires(std::is_base_of_v<Component, T>)
@@ -27,6 +33,10 @@ namespace Core
 
 		std::string GetName() const { return m_Name; }
 		void SetName(const std::string& name) { m_Name = name; }
+
+		void Draw() const;
+
+		glm::mat4 GetModelMatrix() const;
 	private:
 		ECS& m_ECS;
 		std::string m_UUID;
