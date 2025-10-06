@@ -13,7 +13,7 @@ namespace Core
 		m_Running = true;
 	}
 
-	void FileWatcher::Start(const std::function<void(std::string, FileStatus)>& action)
+	void FileWatcher::Start(const std::function<void(const std::string&, FileStatus)>& action)
 	{
 		while (m_Running)
 		{

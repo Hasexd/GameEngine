@@ -14,34 +14,32 @@ namespace Core
     class FileUtils
     {
     public:
-        static std::string GetCoreProjectDir()
-        {
+		static std::string GetCoreProjectDir()
+		{
 #ifdef _WIN32
-            char exePath[MAX_PATH];
-            GetModuleFileNameA(NULL, exePath, MAX_PATH);
-            std::string execDir(exePath);
-            execDir = execDir.substr(0, execDir.find_last_of("\\/"));
+			char exePath[MAX_PATH];
+			GetModuleFileNameA(NULL, exePath, MAX_PATH);
+			std::string execDir(exePath);
+			execDir = execDir.substr(0, execDir.find_last_of("\\/"));
 
-            std::string coreDir = execDir;
-            size_t lastSlash = coreDir.find_last_of("\\/");
-            if (lastSlash != std::string::npos) {
-                coreDir = coreDir.substr(0, lastSlash) + "/Core";
-            }
-            return coreDir;
+			std::filesystem::path binPath(execDir);
+			std::filesystem::path projectRoot = binPath.parent_path().parent_path().parent_path();
+			std::filesystem::path coreDir = projectRoot / "Core";
+
+			return coreDir.string();
 #else
-            char path[1024];
-            ssize_t count = readlink("/proc/self/exe", path, 1024);
-            std::string execDir(path, (count > 0) ? count : 0);
-            execDir = execDir.substr(0, execDir.find_last_of("/"));
+			char path[1024];
+			ssize_t count = readlink("/proc/self/exe", path, 1024);
+			std::string execDir(path, (count > 0) ? count : 0);
+			execDir = execDir.substr(0, execDir.find_last_of("/"));
 
-            std::string coreDir = execDir;
-            size_t lastSlash = coreDir.find_last_of("/");
-            if (lastSlash != std::string::npos) {
-                coreDir = coreDir.substr(0, lastSlash) + "/Core";
-            }
-            return coreDir;
+			std::filesystem::path binPath(execDir);
+			std::filesystem::path projectRoot = binPath.parent_path().parent_path().parent_path();
+			std::filesystem::path coreDir = projectRoot / "Core";
+
+			return coreDir.string();
 #endif
-        }
+		}
 
         static std::string GetShaderPath(const std::string& shaderName)
         {

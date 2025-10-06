@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <array>
 #include <memory>
+#include <future>
 
 #include "Window.h"
 #include "ECS.h"
@@ -12,6 +13,7 @@
 #include "Camera.h"
 #include "Physics.h"
 #include "WindowEvents.h"
+#include "FileWatcher.h"
 
 namespace Core
 {
@@ -41,11 +43,15 @@ namespace Core
 
 	private:
 		void SyncPhysicsWorld();
+		void MonitorShaderChanges();
 	private:
 		ECS m_ECS;
 		Renderer m_Renderer;
 		PhysicsWorld m_PhysicsWorld;
 		Window m_Window;
+
+		FileWatcher m_FileWatcher;
+		std::future<void> m_FileWatcherFuture;
 
 		std::vector<std::shared_ptr<Object>> m_Objects;
 	};

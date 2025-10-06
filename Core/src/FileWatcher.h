@@ -21,7 +21,7 @@ namespace Core
 		FileWatcher() = default;
 		FileWatcher(const std::string& pathToWatch, std::chrono::duration<int, std::milli> delay);
 
-		void Start(const std::function<void(std::string, FileStatus)>& action);
+		void Start(const std::function<void(const std::string&, FileStatus)>& action);
 		
 	private:
 		bool Contains(const std::string& key);

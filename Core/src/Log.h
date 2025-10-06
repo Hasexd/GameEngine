@@ -3,6 +3,7 @@
 #include <print>
 #include <source_location>
 #include <format>
+#include <string>
 
 enum class LogLevel : uint8_t
 {
@@ -28,7 +29,11 @@ inline void LogInternal(LogLevel level, const std::string& message, const std::s
 	case LogLevel::Critical: levelStr = "[CRITICAL]"; break;
 	}
 
-	std::println("{} {}:{} - {}", levelStr, loc.file_name(), loc.line(), message);
+	std::string filePath = std::string(loc.file_name());
+	size_t lastSlash = filePath.find_last_of("/\\");
+	std::string fileName = (lastSlash == std::string::npos) ? filePath : filePath.substr(lastSlash + 1);
+
+	std::println("{} {}:{} - {}", levelStr, fileName, loc.line(), message);
 }
 
 #ifndef DIST

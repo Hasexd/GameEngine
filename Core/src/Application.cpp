@@ -13,6 +13,13 @@ namespace Core
         m_Window.Initialize(1920, 1080, "Engine Window");
         m_Renderer.Initialize();
 
+        m_FileWatcher = FileWatcher(FileUtils::GetCoreProjectDir() + "/shaders", std::chrono::duration<int, std::milli>(500));
+       
+        m_FileWatcherFuture = std::async(std::launch::async, [this]() -> void
+            {
+				MonitorShaderChanges();
+            });
+
         AddObject<Cube>();
         AddObject<Cube>();
         AddObject<LightCube>();
@@ -94,4 +101,16 @@ namespace Core
         m_PhysicsWorld.UpdateObjectList(m_Objects);
     }
 
+    void Application::MonitorShaderChanges()
+    {
+		m_FileWatcher.Start([](std::string fileName, Core::FileStatus status) -> void
+			{
+				if (status == FileStatus::Created)
+					LOG_INFO("File created: {}", fileName);
+				else if (status == FileStatus::Modified)
+					LOG_INFO("File modified: {}", fileName);
+				else if (status == FileStatus::Deleted)
+					LOG_INFO("File deleted: {}", fileName);
+			});
+    }
 }
