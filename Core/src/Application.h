@@ -20,6 +20,8 @@ namespace Core
 	class Application
 	{
 	public:
+		~Application();
+
 		void Update();
 		void Initialize();
 		void OnViewportResize(uint32_t width, uint32_t height);
@@ -41,6 +43,8 @@ namespace Core
 		GLFWwindow* GetWindow() const { return m_Window.GetWindow(); }
 		Window& GetWindowRef() { return m_Window; }
 
+		void ReloadShaders();
+
 	private:
 		void SyncPhysicsWorld();
 		void MonitorShaderChanges();
@@ -54,6 +58,7 @@ namespace Core
 		std::future<void> m_FileWatcherFuture;
 
 		std::vector<std::shared_ptr<Object>> m_Objects;
+		std::vector<std::string> m_ModifiedShaderFiles;
 	};
 
 	template<typename T>

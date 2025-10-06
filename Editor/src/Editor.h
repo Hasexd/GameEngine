@@ -47,6 +47,7 @@ private:
 	bool m_FirstMouse = true;
 	bool m_RightMousePressed = false;
 	bool m_IsViewportHovered = false;
+	bool m_ReloadShortcutPressed = false;
 
 	Core::Application m_Application;
 	std::shared_ptr<Core::Object> m_SelectedObject = nullptr;

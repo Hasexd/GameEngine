@@ -56,6 +56,10 @@ namespace Core
 		}
 	}
 
+	void FileWatcher::Stop()
+	{
+		m_Running = false;
+	}
 
 	bool FileWatcher::Contains(const std::string& key)
 	{

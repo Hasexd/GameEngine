@@ -33,9 +33,10 @@ namespace Core
 		void SetActiveCamera(const std::shared_ptr<Camera>& camera);
 		std::shared_ptr<Camera> GetActiveCamera() const { return m_ActiveCamera; }
 
+		std::unordered_map<std::string, std::shared_ptr<Shader>>& GetShaderCache() { return m_ShaderCache; }
+
 	private:
 		void SetupFramebuffer();
-
 	private:
 		uint32_t m_ViewportWidth;
 		uint32_t m_ViewportHeight;
@@ -47,7 +48,6 @@ namespace Core
 		glm::mat4 m_ProjectionMatrix;
 
 		std::shared_ptr<Camera> m_ActiveCamera;
-
 		std::unordered_map<std::string, std::shared_ptr<Shader>> m_ShaderCache;
 	};
 }

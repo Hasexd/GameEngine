@@ -12,7 +12,9 @@ namespace Core
 		S,
 		A,
 		D,
-		ESCAPE
+		R,
+		ESCAPE,
+		CTRL
 	};
 
 	enum class MouseInput

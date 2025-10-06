@@ -9,7 +9,9 @@ namespace Core
 		{ KeyInput::S, GLFW_KEY_S },
 		{ KeyInput::A, GLFW_KEY_A },
 		{ KeyInput::D, GLFW_KEY_D },
-		{ KeyInput::ESCAPE, GLFW_KEY_ESCAPE }
+		{ KeyInput::R , GLFW_KEY_R},
+		{ KeyInput::ESCAPE, GLFW_KEY_ESCAPE },
+		{ KeyInput::CTRL, GLFW_KEY_LEFT_CONTROL }
 	};
 
 	const std::unordered_map<MouseInput, uint32_t> Input::m_MouseButtonMap = {

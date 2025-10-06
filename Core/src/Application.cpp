@@ -103,14 +103,37 @@ namespace Core
 
     void Application::MonitorShaderChanges()
     {
-		m_FileWatcher.Start([](std::string fileName, Core::FileStatus status) -> void
+		m_FileWatcher.Start([this](std::string filePath, Core::FileStatus status) -> void
 			{
-				if (status == FileStatus::Created)
-					LOG_INFO("File created: {}", fileName);
-				else if (status == FileStatus::Modified)
-					LOG_INFO("File modified: {}", fileName);
-				else if (status == FileStatus::Deleted)
-					LOG_INFO("File deleted: {}", fileName);
+                if (status == FileStatus::Created)
+                {
+					LOG_INFO("Shader file created: {}", filePath);
+
+                }
+                else if (status == FileStatus::Modified)
+                {
+					size_t lastSlash = filePath.find_last_of("/\\");
+					std::string fileName = (lastSlash == std::string::npos) ? filePath : filePath.substr(lastSlash + 1);
+
+                    m_ModifiedShaderFiles.emplace_back(fileName);
+                }
+                else if (status == FileStatus::Deleted)
+                {
+					LOG_WARN("Shader file deleted: {}", filePath);
+                }
 			});
     }
+
+    void Application::ReloadShaders()
+    {
+        LOG_INFO("Reloading modified shaders...");
+    }
+
+    Application::~Application()
+    {
+        m_FileWatcher.Stop();
+
+        if (m_FileWatcherFuture.valid())
+            m_FileWatcherFuture.get();
+	}
 }

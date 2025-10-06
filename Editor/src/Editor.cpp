@@ -78,10 +78,23 @@ void Editor::ProcessInput()
 			m_EditorCamera->ProcessKeyboard(Core::Direction::LEFT, m_DeltaTime);
 		if (Input::IsKeyPressed(KeyInput::D))
 			m_EditorCamera->ProcessKeyboard(Core::Direction::RIGHT, m_DeltaTime);
-
-        if (Input::IsKeyPressed(KeyInput::ESCAPE))
-            m_SelectedObject = nullptr;
     }
+
+	if (Input::IsKeyPressed(KeyInput::ESCAPE))
+		m_SelectedObject = nullptr;
+
+	if (Input::IsKeyPressed(KeyInput::CTRL) && Input::IsKeyPressed(KeyInput::R))
+	{
+		if (!m_ReloadShortcutPressed)
+		{
+			m_Application.ReloadShaders();
+			m_ReloadShortcutPressed = true;
+		}
+	}
+	else
+	{
+		m_ReloadShortcutPressed = false;
+	}
 }
 
 void Editor::RenderImGui()

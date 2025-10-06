@@ -10,8 +10,8 @@ namespace Core
 		auto objectShader = std::make_unique<Shader>(FileUtils::GetShaderPath("objectVert.glsl"), FileUtils::GetShaderPath("objectFrag.glsl"));
 		auto lightShader = std::make_unique<Shader>(FileUtils::GetShaderPath("objectVert.glsl"), FileUtils::GetShaderPath("lightFrag.glsl"));
 
-		m_ShaderCache["objectShader"] = std::move(objectShader);
-		m_ShaderCache["lightShader"] = std::move(lightShader);
+		m_ShaderCache["object"] = std::move(objectShader);
+		m_ShaderCache["light"] = std::move(lightShader);
 
 		m_ProjectionMatrix = glm::perspective(
 			45.0f,
@@ -48,7 +48,7 @@ namespace Core
 
 			if (isDrawable && isLight)
 			{
-				const auto& lightShader = m_ShaderCache.at("lightShader");
+				const auto& lightShader = m_ShaderCache.at("light");
 
 				if (!lightShader)
 				{
@@ -69,7 +69,7 @@ namespace Core
 			} 
 			else if (isDrawable)
 			{
-				const auto& objShader = m_ShaderCache.at("objectShader");
+				const auto& objShader = m_ShaderCache.at("object");
 
 				if (!objShader)
 				{
