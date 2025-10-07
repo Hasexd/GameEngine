@@ -125,11 +125,20 @@ namespace Core
         if (!m_ShadersNeedReload)
             return;
 
-        for (const std::string& shaderName : m_ModifiedShaderFiles)
+		LOG_INFO("Shaders needed to reload: ");
+        for (const std::string& shaderFile : m_ModifiedShaderFiles)
         {
-			LOG_INFO("Reloading shaders made with {}", shaderName);
+            for (auto& [name, shader] : m_Renderer.GetShaderCache())
+            {
+                if (shaderFile == shader->GetFragmentShaderName() || shaderFile == shader->GetVertexShaderName())
+                {
+					if(shader->Reload())
+                        LOG_INFO("{}: OK", name);
+                    else
+						LOG_ERROR("{}: FAILED", name);
+                }
+            }
         }
-
     }
 
     Application::~Application()

@@ -4,6 +4,7 @@
 #include <array>
 #include <memory>
 #include <future>
+#include <string>
 
 #include "Window.h"
 #include "ECS.h"

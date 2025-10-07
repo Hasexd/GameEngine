@@ -2,14 +2,31 @@
 
 namespace Core
 {
-	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath):
+		m_VertexShaderName(FileUtils::GetFileName(vertexPath)), m_FragmentShaderName(FileUtils::GetFileName(fragmentPath))
 	{
-		m_VertexShaderName = FileUtils::GetFileName(vertexPath);
-		m_FragmentShaderName = FileUtils::GetFileName(fragmentPath);
+		m_ID = Create();
+	}
 
+	bool Shader::Reload()
+	{
+		GLuint reloadedProgram = Create();
 
-		std::string vertexCode = LoadShaderFromFile(vertexPath);
-		std::string fragmentCode = LoadShaderFromFile(fragmentPath);
+		if (reloadedProgram != -1)
+		{
+			glDeleteProgram(m_ID);
+			m_ID = reloadedProgram;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	GLuint Shader::Create()
+	{
+		std::string vertexCode = LoadShaderFromFile(FileUtils::GetShaderPath(m_VertexShaderName));
+		std::string fragmentCode = LoadShaderFromFile(FileUtils::GetShaderPath(m_FragmentShaderName));
 
 		const char* vShaderCode = vertexCode.c_str();
 		const char* fShaderCode = fragmentCode.c_str();
@@ -17,21 +34,42 @@ namespace Core
 		GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vShaderCode, nullptr);
 		glCompileShader(vertex);
-		CheckCompileErrors(vertex, "VERTEX");
+
+		if (!CheckCompileErrors(vertex, "VERTEX"))
+		{
+			glDeleteShader(vertex);
+			return -1;
+		}
 
 		GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fShaderCode, nullptr);
 		glCompileShader(fragment);
-		CheckCompileErrors(fragment, "FRAGMENT");
+		
+		if (!CheckCompileErrors(fragment, "FRAGMENT"))
+		{
+			glDeleteShader(vertex);
+			glDeleteShader(fragment);
+			return -1;
+		}
 
-		m_ID = glCreateProgram();
-		glAttachShader(m_ID, vertex);
-		glAttachShader(m_ID, fragment);
-		glLinkProgram(m_ID);
-		CheckCompileErrors(m_ID, "PROGRAM");
+		GLuint programID = glCreateProgram();
+		glAttachShader(programID, vertex);
+		glAttachShader(programID, fragment);
+		glLinkProgram(programID);
+
+		if (!CheckCompileErrors(programID, "PROGRAM"))
+		{
+			glDeleteShader(vertex);
+			glDeleteShader(fragment);
+			glDeleteProgram(programID);
+
+			return -1;
+		}
 
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
+
+		return programID;
 	}
 
 	void Shader::Use() const
@@ -85,9 +123,10 @@ namespace Core
 		return shaderCode;
 	}
 
-	void Shader::CheckCompileErrors(GLuint shader, const std::string& type)
+	bool Shader::CheckCompileErrors(GLuint shader, const std::string& type)
 	{
 		int success;
+
 		char infoLog[1024];
 
 		if (type != "PROGRAM")
@@ -96,8 +135,10 @@ namespace Core
 
 			if (!success)
 			{
-				glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+				glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
 				LOG_ERROR("shader compilation error of type: {}\n{}", type, infoLog);
+
+				return false;
 			}
 		}
 		else
@@ -108,8 +149,12 @@ namespace Core
 			{
 				glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
 				LOG_ERROR("Program linking error of type: {}\n{}", type, infoLog);
+
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	Shader::~Shader()

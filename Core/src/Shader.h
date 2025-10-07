@@ -25,12 +25,15 @@ namespace Core
 		void SetFloat(const std::string& name, float value) const;
 		void SetBool(const std::string& name, bool value) const;
 
+		bool Reload();
+
 		std::string GetVertexShaderName() const { return m_VertexShaderName; }
 		std::string GetFragmentShaderName() const { return m_FragmentShaderName; }
 
 	private:
+		GLuint Create();
 		std::string LoadShaderFromFile(const std::string& path);
-		void CheckCompileErrors(GLuint shader, const std::string& type);
+		bool CheckCompileErrors(GLuint shader, const std::string& type);
 
 		GLuint m_ID;
 		std::string m_VertexShaderName;
