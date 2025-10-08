@@ -63,7 +63,7 @@ namespace Core
 				lightShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
 				lightShader->SetMatrix4("projection", m_ProjectionMatrix);
 				lightShader->SetMatrix4("model", modelMatrix);
-				lightShader->SetBool("isOutlinePass", false);
+				lightShader->SetMatrix3("normal", object->GetNormalMatrix(modelMatrix));
 
 				object->Draw();
 			} 
@@ -84,11 +84,11 @@ namespace Core
 				objShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
 				objShader->SetMatrix4("projection", m_ProjectionMatrix);
 				objShader->SetMatrix4("model", modelMatrix);
-
-				objShader->SetBool("isOutlinePass", false);
+				objShader->SetMatrix3("normal", object->GetNormalMatrix(modelMatrix));
 
 				objShader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
 				objShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+				objShader->SetVec3("lightPos", glm::vec3(0.0f, 0.0f, -5.0f));
 
 				object->Draw();
 			}

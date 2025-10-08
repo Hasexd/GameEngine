@@ -46,4 +46,10 @@ namespace Core
 
 		return model;
 	}
+
+	glm::mat3 Object::GetNormalMatrix(const glm::mat4& modelMatrix) const
+	{
+		return glm::mat3(glm::transpose(glm::inverse(modelMatrix)));
+	}
+
 }
