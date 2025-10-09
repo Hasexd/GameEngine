@@ -35,6 +35,8 @@ namespace Core
 
 		std::unordered_map<std::string, std::shared_ptr<Shader>>& GetShaderCache() { return m_ShaderCache; }
 
+		glm::mat4 GetProjectionMatrix() const { return m_ProjectionMatrix; }
+
 	private:
 		void SetupFramebuffer();
 	private:

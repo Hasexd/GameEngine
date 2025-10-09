@@ -61,11 +61,7 @@ namespace Core
         float x = (2.0f * mouseX) / screenWidth - 1.0f;
         float y = 1.0f - (2.0f * mouseY) / screenHeight;
 
-        glm::mat4 projection = glm::perspective(
-            glm::radians(camera->FieldOfView),
-            screenWidth / screenHeight,
-            0.1f,
-            100.0f);
+        glm::mat4 projection = m_Renderer.GetProjectionMatrix();
 
         glm::mat4 view = camera->GetViewMatrix();
 
@@ -144,8 +140,5 @@ namespace Core
     Application::~Application()
     {
         m_FileWatcher.Stop();
-
-        if (m_FileWatcherFuture.valid())
-            m_FileWatcherFuture.get();
 	}
 }

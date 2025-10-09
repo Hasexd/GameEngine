@@ -182,20 +182,21 @@ void Editor::OnMouseButton(int button, int action, int mods)
         m_RightMousePressed = false;
 		Core::Input::SetCursorMode(Core::CursorMode::NORMAL);
     }
-    else if (Input::IsMouseButtonPressed(MouseInput::MOUSE_LEFT))
+
+    if (Input::IsMouseButtonPressed(MouseInput::MOUSE_LEFT))
     {
         if (m_IsViewportHovered && !m_RightMousePressed)
         {
             double mouseX, mouseY;
             glfwGetCursorPos(m_Application.GetWindow(), &mouseX, &mouseY);
 
-            float viewportMouseX = mouseX - m_ViewportPosition.x;
-            float viewportMouseY = mouseY - m_ViewportPosition.y;
+			float viewportMouseX = mouseX - m_ViewportPosition.x;
+			float viewportMouseY = mouseY - m_ViewportPosition.y;
 
             if (viewportMouseX >= 0 && viewportMouseX < m_ViewportWidth &&
                 viewportMouseY >= 0 && viewportMouseY < m_ViewportHeight)
             {
-                auto hit = m_Application.ScreenToWorldRaycast(
+                RaycastHit hit = m_Application.ScreenToWorldRaycast(
                     viewportMouseX,
                     viewportMouseY,
                     m_ViewportWidth,
@@ -215,9 +216,6 @@ void Editor::OnMouseButton(int button, int action, int mods)
 
 void Editor::OnCursorPos(double xpos, double ypos)
 {
-    if (!m_RightMousePressed) 
-        return;
-
     if (m_FirstMouse)
     {
         m_LastX = xpos;
@@ -232,7 +230,8 @@ void Editor::OnCursorPos(double xpos, double ypos)
     m_LastX = xpos;
     m_LastY = ypos;
 
-    m_EditorCamera->ProcessMouseMovement(xoffset, yoffset);
+    if(m_RightMousePressed && m_IsViewportHovered)
+        m_EditorCamera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void Editor::OnScroll(double xoffset, double yoffset)
