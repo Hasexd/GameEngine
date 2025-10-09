@@ -46,6 +46,8 @@ namespace Core
 		GLuint m_DepthBufferID;
 
 		glm::mat4 m_ProjectionMatrix;
+		std::shared_ptr<Object> m_LightObject = nullptr;
+
 
 		std::shared_ptr<Camera> m_ActiveCamera;
 		std::unordered_map<std::string, std::shared_ptr<Shader>> m_ShaderCache;

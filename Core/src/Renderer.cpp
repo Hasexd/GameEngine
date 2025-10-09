@@ -41,6 +41,7 @@ namespace Core
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+
 		for (const auto& object : objects)
 		{
 			const bool isDrawable = object->HasComponent<Transform>() && object->HasComponent<Mesh>();
@@ -55,6 +56,8 @@ namespace Core
 					LOG_CRITICAL("Light shader not found in the cache, unable to render.");
 					return;
 				}
+
+				m_LightObject = object;
 
 				glm::mat4 modelMatrix = object->GetModelMatrix();
 
@@ -79,6 +82,18 @@ namespace Core
 
 				glm::mat4 modelMatrix = object->GetModelMatrix();
 
+				glm::vec3 lightPos = glm::vec3(0);
+
+				if (m_LightObject)
+				{
+					if (m_LightObject->HasComponent<Transform>())
+					{
+						const Transform* lightTransform = m_LightObject->GetComponent<Transform>();
+
+						lightPos = glm::vec3(lightTransform->X, lightTransform->Y, lightTransform->Z);
+					}
+				}
+
 				objShader->Use();
 
 				objShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
@@ -88,7 +103,8 @@ namespace Core
 
 				objShader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
 				objShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				objShader->SetVec3("lightPos", glm::vec3(0.0f, 0.0f, -5.0f));
+				objShader->SetVec3("lightPos", lightPos);
+				objShader->SetVec3("viewPos", m_ActiveCamera->Position);
 
 				object->Draw();
 			}
