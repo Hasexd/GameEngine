@@ -15,25 +15,49 @@ enum class LogLevel : uint8_t
 	Critical
 };
 
-inline void LogInternal(LogLevel level, const std::string& message, const std::source_location& loc = std::source_location::current())
+namespace
 {
-	const char* levelStr = nullptr;
-
-	switch (level)
+	void LogInternal(LogLevel level, const std::string& message, const std::source_location& loc = std::source_location::current())
 	{
-	case LogLevel::Trace: levelStr = "[TRACE]"; break;
-	case LogLevel::Debug: levelStr = "[DEBUG]"; break;
-	case LogLevel::Info: levelStr = "[INFO]"; break;
-	case LogLevel::Warning: levelStr = "[WARNING]"; break;
-	case LogLevel::Error: levelStr = "[ERROR]"; break;
-	case LogLevel::Critical: levelStr = "[CRITICAL]"; break;
+		const char* levelStr = nullptr;
+		int textColor = 37;
+
+		switch (level)
+		{
+		case LogLevel::Trace:
+			levelStr = "[TRACE]";
+			textColor = 32;
+			break;
+		case LogLevel::Debug:
+			levelStr = "[DEBUG]";
+			textColor = 36;
+			break;
+		case LogLevel::Info:
+			levelStr = "[INFO]";
+			textColor = 34;
+			break;
+		case LogLevel::Warning:
+			levelStr = "[WARNING]";
+			textColor = 33;
+			break;
+		case LogLevel::Error:
+			levelStr = "[ERROR]";
+			textColor = 35;
+			break;
+		case LogLevel::Critical:
+			levelStr = "[CRITICAL]";
+			textColor = 31;
+			break;
+		}
+
+		std::string filePath = std::string(loc.file_name());
+		size_t lastSlash = filePath.find_last_of("/\\");
+		std::string fileName = (lastSlash == std::string::npos) ? filePath : filePath.substr(lastSlash + 1);
+
+		std::print("\033[1;{}m", textColor);
+		std::println("{} {}:{} - {}", levelStr, fileName, loc.line(), message);
+		std::print("\033[0m");
 	}
-
-	std::string filePath = std::string(loc.file_name());
-	size_t lastSlash = filePath.find_last_of("/\\");
-	std::string fileName = (lastSlash == std::string::npos) ? filePath : filePath.substr(lastSlash + 1);
-
-	std::println("{} {}:{} - {}", levelStr, fileName, loc.line(), message);
 }
 
 #ifndef DIST

@@ -203,11 +203,6 @@ void Editor::OnMouseButton(int button, int action, int mods)
                     m_ViewportHeight
                 );
 
-                if (hit.Hit)
-                    LOG_INFO("Hit object: {}\n", hit.Object->GetName());
-                else
-                    LOG_INFO("No object hit.");
-
                 m_SelectedObject = hit.Hit ? hit.Object : nullptr;
             }
         }
@@ -230,7 +225,7 @@ void Editor::OnCursorPos(double xpos, double ypos)
     m_LastX = xpos;
     m_LastY = ypos;
 
-    if(m_RightMousePressed && m_IsViewportHovered)
+    if(m_RightMousePressed)
         m_EditorCamera->ProcessMouseMovement(xoffset, yoffset);
 }
 
