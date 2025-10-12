@@ -52,5 +52,15 @@ namespace Core
         {
             return GetCoreProjectDir() + "/shaders/" + shaderName;
         }
+
+		static std::string GetAssetsDir()
+		{
+			return GetCoreProjectDir() + "/assets/";
+		}
+
+		static std::string GetObjPath(const std::string& name)
+		{
+			return GetAssetsDir() + "/objs/" + name + ".obj";
+		}
     };
 }

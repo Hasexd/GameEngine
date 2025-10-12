@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Object.h"
+#include "Mesh.h"
+#include "FileUtils.h"
 
 namespace Core
 {

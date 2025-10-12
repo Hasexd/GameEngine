@@ -39,6 +39,8 @@ namespace Core
 		cubeTransform->Z = -5.0f;
 
         SyncPhysicsWorld();
+
+        Mesh::LoadFromObj(FileUtils::GetObjPath("cube"));
     }
 
     void Application::OnViewportResize(uint32_t width, uint32_t height)
