@@ -15,6 +15,7 @@
 #include "Physics.h"
 #include "WindowEvents.h"
 #include "FileWatcher.h"
+#include "AxisArrow.h"
 
 namespace Core
 {
