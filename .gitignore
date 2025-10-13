@@ -49,4 +49,5 @@ bin/
 *.vcxproj.user
 *.sln
 
+!Core/assets/objs/*.obj
 !premake5.exe
