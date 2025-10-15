@@ -9,9 +9,11 @@ namespace Core
 
 		auto objectShader = std::make_unique<Shader>(FileUtils::GetShaderPath("objectVert.glsl"), FileUtils::GetShaderPath("objectFrag.glsl"));
 		auto lightShader = std::make_unique<Shader>(FileUtils::GetShaderPath("objectVert.glsl"), FileUtils::GetShaderPath("lightFrag.glsl"));
+		auto axisShader = std::make_unique<Shader>(FileUtils::GetShaderPath("axisVert.glsl"), FileUtils::GetShaderPath("axisFrag.glsl"));
 
 		m_ShaderCache["object"] = std::move(objectShader);
 		m_ShaderCache["light"] = std::move(lightShader);
+		m_ShaderCache["axis"] = std::move(axisShader);
 
 		m_ProjectionMatrix = glm::perspective(
 			45.0f,
@@ -23,7 +25,7 @@ namespace Core
 		SetupFramebuffer();
 	}
 
-	void Renderer::Render(const std::vector<std::shared_ptr<Object>>& objects)
+	void Renderer::Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject)
 	{
 		if (!m_ActiveCamera)
 			return;
@@ -43,10 +45,67 @@ namespace Core
 
 		for (const auto& object : objects)
 		{
-			const bool isDrawable = object->HasComponent<Transform>() && object->HasComponent<Mesh>();
+			const bool isDrawable = object->HasComponent<Transform>() && object->HasComponent<Mesh>() && object->IsVisible();
 			const bool isLight = std::dynamic_pointer_cast<LightCube>(object) != nullptr;
+			const bool isAxisArrow = std::dynamic_pointer_cast<AxisArrow>(object) != nullptr;
 
-			if (isDrawable && isLight)
+			if (isDrawable && selectedObject && isAxisArrow)
+			{
+				const auto& axisShader = m_ShaderCache.at("axis");
+
+				if (!axisShader)
+				{
+					LOG_CRITICAL("Axis shader not found in the cache, unable to render.");
+					return;
+				}
+
+				Transform* selectedTransform = selectedObject->GetComponent<Transform>();
+				glm::vec3 selectedPos = selectedTransform->GetPosition();
+
+				glm::vec3 cameraPos = m_ActiveCamera->Position;
+				float distance = glm::length(cameraPos - selectedPos);
+
+				float constantScale = distance * 0.05f;
+
+				glm::mat4 modelMatrix = glm::mat4(1.0f);
+				modelMatrix = glm::translate(modelMatrix, selectedPos);
+				modelMatrix = glm::scale(modelMatrix, glm::vec3(constantScale));
+
+				if (object->GetName() == "X-Axis-Arrow")
+					modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				else if (object->GetName() == "Y-Axis-Arrow")
+					modelMatrix = glm::rotate(modelMatrix, glm::radians(270.f), glm::vec3(1.0f, 0.0f, 0.0f));
+				else if (object->GetName() == "Z-Axis-Arrow")
+					modelMatrix = glm::rotate(modelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+				axisShader->Use();
+
+				axisShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
+				axisShader->SetMatrix4("projection", m_ProjectionMatrix);
+				axisShader->SetMatrix4("model", modelMatrix);
+
+				glm::vec3 axisColor = {};
+
+				if (object->GetName() == "X-Axis-Arrow")
+				{
+					axisColor = glm::vec3(1.0f, 0.0f, 0.0f);
+				}
+				else if (object->GetName() == "Y-Axis-Arrow")
+				{
+					axisColor = glm::vec3(0.0f, 1.0f, 0.0f);
+				}
+				else if (object->GetName() == "Z-Axis-Arrow")
+				{
+					axisColor = glm::vec3(0.0f, 0.0f, 1.0f);
+				}
+
+				axisShader->SetVec3("axisColor", axisColor);
+
+				glDepthFunc(GL_ALWAYS);
+				object->Draw();
+				glDepthFunc(GL_LESS);
+			}
+			else if (isDrawable && isLight)
 			{
 				const auto& lightShader = m_ShaderCache.at("light");
 

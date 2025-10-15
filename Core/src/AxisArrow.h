@@ -3,6 +3,7 @@
 #include "Object.h"
 #include "Mesh.h"
 #include "FileUtils.h"
+#include "Log.h"
 
 namespace Core
 {
@@ -12,5 +13,7 @@ namespace Core
 		AxisArrow(ECS& ecs);
 		~AxisArrow() override = default;
 
+	private:
+		static inline uint32_t Count;
 	};
 }

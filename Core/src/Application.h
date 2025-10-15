@@ -24,7 +24,7 @@ namespace Core
 	public:
 		~Application();
 
-		void Update();
+		void Update(const std::shared_ptr<Object>& selectedObject = nullptr);
 		void Initialize();
 		void OnViewportResize(uint32_t width, uint32_t height);
 
@@ -38,9 +38,17 @@ namespace Core
 
 		template<typename T>
 		requires(std::is_base_of_v<Object, T>)
-		void AddObject();
+		std::shared_ptr<T> AddObject();
+
+		template<typename T>
+		requires(std::is_base_of_v<Object, T>)
+		std::shared_ptr<T> AddObject(const std::string& name);
 
 		void RemoveObject(const std::shared_ptr<Object>& object);
+
+		template<typename T>
+		requires(std::is_base_of_v<Object, T>)
+		std::vector<std::shared_ptr<T>> GetAllObjectsOfType();
 
 		GLFWwindow* GetWindow() const { return m_Window.GetWindow(); }
 		Window& GetWindowRef() { return m_Window; }
@@ -67,11 +75,45 @@ namespace Core
 
 	template<typename T>
 	requires(std::is_base_of_v<Object, T>)
-	void Application::AddObject()
+	std::shared_ptr<T> Application::AddObject()
 	{
 		std::shared_ptr<T> object = std::make_shared<T>(m_ECS);
 
-		m_Objects.emplace_back(object);
-		m_PhysicsWorld.RegisterObject(object);
+		m_Objects.push_back(object);
+
+		if constexpr (!std::is_same_v<T, AxisArrow>)
+			m_PhysicsWorld.RegisterObject(object);
+
+		return object;
+	}
+
+	template<typename T>
+	requires(std::is_base_of_v<Object, T>)
+	std::shared_ptr<T> Application::AddObject(const std::string& name)
+	{
+		std::shared_ptr<T> object = std::make_shared<T>(m_ECS);
+		object->SetName(name);
+
+		m_Objects.push_back(object);
+
+		if constexpr (!std::is_same_v<T, AxisArrow>)
+			m_PhysicsWorld.RegisterObject(object);
+
+		return object;
+	}
+
+	template<typename T>
+	requires(std::is_base_of_v<Object, T>)
+	std::vector<std::shared_ptr<T>> Application::GetAllObjectsOfType()
+	{
+		std::vector<std::shared_ptr<T>> results;
+		for (const auto& obj : m_Objects)
+		{
+			if (std::shared_ptr<T> casted = std::dynamic_pointer_cast<T>(obj))
+			{
+				results.push_back(casted);
+			}
+		}
+		return results;
 	}
 }

@@ -16,25 +16,29 @@ namespace Core
 		Object(ECS& ecs);
 		virtual ~Object() = default;
 
+		void Draw() const;
+
 		template<typename T, typename... Args>
-			requires(std::is_base_of_v<Component, T>)
+		requires(std::is_base_of_v<Component, T>)
 		T& AddComponent(Args&&... args);
 
 		template<typename T>
 		T* GetComponent() const;
 
 		template<typename T>
-			requires(std::is_base_of_v<Component, T>)
+		requires(std::is_base_of_v<Component, T>)
 		bool HasComponent() const;
 
 		template<typename T>
-			requires(std::is_base_of_v<Component, T>)
+		requires(std::is_base_of_v<Component, T>)
 		void RemoveComponent();
 
 		std::string GetName() const { return m_Name; }
 		void SetName(const std::string& name) { m_Name = name; }
 
-		void Draw() const;
+		bool IsVisible() const { return m_Visible; }
+		void SetVisible(bool visible) { m_Visible = visible; }
+
 
 		glm::mat4 GetModelMatrix() const;
 		glm::mat3 GetNormalMatrix(const glm::mat4& modelMatrix) const;
@@ -42,11 +46,13 @@ namespace Core
 		ECS& m_ECS;
 		std::string m_UUID;
 		std::string m_Name;
+
+		bool m_Visible;
 	};
 
 
 	template<typename T, typename... Args>
-		requires(std::is_base_of_v<Component, T>)
+	requires(std::is_base_of_v<Component, T>)
 	T& Object::AddComponent(Args&&... args)
 	{
 		return m_ECS.AddComponent<T>(m_UUID, std::forward<Args>(args)...);
@@ -59,14 +65,14 @@ namespace Core
 	}
 
 	template<typename T>
-		requires(std::is_base_of_v<Component, T>)
+	requires(std::is_base_of_v<Component, T>)
 	bool Object::HasComponent() const
 	{
 		return m_ECS.HasComponent<T>(m_UUID);
 	}
 
 	template<typename T>
-		requires(std::is_base_of_v<Component, T>)
+	requires(std::is_base_of_v<Component, T>)
 	void Object::RemoveComponent()
 	{
 		m_ECS.RemoveComponent<T>(m_UUID);

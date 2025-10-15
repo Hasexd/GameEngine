@@ -12,6 +12,7 @@
 #include "Transform.h"
 #include "Log.h"
 #include "Input.h"
+#include "AxisArrow.h"
 
 
 class Editor : public Core::WindowEventListener
@@ -32,6 +33,9 @@ private:
 	void InitializeImGui();
 	void RenderImGui();
 	void ProcessInput();
+
+	void ShowAxisArrows();
+	void HideAxisArrows();
 
 private:
 	uint32_t m_ViewportWidth, m_ViewportHeight;

@@ -18,6 +18,10 @@ namespace Core
 		Transform(float x, float y, float z):
 			X(x), Y(y), Z(z) {}
 
+		glm::vec3 GetPosition() const { return glm::vec3(X, Y, Z); }
+		glm::vec3 GetRotation() const { return glm::vec3(RotationX, RotationY, RotationZ); }
+		glm::vec3 GetScale() const { return glm::vec3(ScaleX, ScaleY, ScaleZ); }
+
 		virtual ~Transform() = default;
 	};
 }

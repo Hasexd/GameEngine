@@ -13,6 +13,11 @@ Editor::Editor() :
 
 	Core::Input::SetWindow(&m_Application.GetWindowRef());
 
+
+	m_Application.AddObject<Core::AxisArrow>("X-Axis-Arrow");
+	m_Application.AddObject<Core::AxisArrow>("Y-Axis-Arrow");
+	m_Application.AddObject<Core::AxisArrow>("Z-Axis-Arrow");
+
     m_Running = true;
 }
 
@@ -41,15 +46,6 @@ void Editor::Run()
         m_DeltaTime = currentFrame - m_LastFrame;
         m_LastFrame = currentFrame;
 
-        if (m_SelectedObject)
-        {
-            Core::Transform* transform = m_SelectedObject->GetComponent<Core::Transform>();
-
-            transform->RotationX += 100.0f * m_DeltaTime;
-			transform->RotationY += 100.0f * m_DeltaTime;
-			transform->RotationZ += 100.0f * m_DeltaTime;
-        }
-
         glfwPollEvents();
         ProcessInput();
 
@@ -59,7 +55,7 @@ void Editor::Run()
 
         RenderImGui();
 
-        m_Application.Update();
+        m_Application.Update(m_SelectedObject);
         glfwSwapBuffers(m_Application.GetWindow());
     }
 }
@@ -80,8 +76,11 @@ void Editor::ProcessInput()
 			m_EditorCamera->ProcessKeyboard(Core::Direction::RIGHT, m_DeltaTime);
     }
 
-	if (Input::IsKeyPressed(KeyInput::ESCAPE))
+    if (Input::IsKeyPressed(KeyInput::ESCAPE))
+    {
 		m_SelectedObject = nullptr;
+        HideAxisArrows();
+    }
 
 	if (Input::IsKeyPressed(KeyInput::CTRL) && Input::IsKeyPressed(KeyInput::R))
 	{
@@ -130,6 +129,7 @@ void Editor::RenderImGui()
         if (ImGui::Selectable(object->GetName().c_str(), isSelected))
         {
             m_SelectedObject = object;
+            ShowAxisArrows();
         }
     }
     ImGui::End();
@@ -203,10 +203,39 @@ void Editor::OnMouseButton(int button, int action, int mods)
                     m_ViewportHeight
                 );
 
-                m_SelectedObject = hit.Hit ? hit.Object : nullptr;
+                if (hit.Hit)
+                {
+                    m_SelectedObject = hit.Object;
+					ShowAxisArrows();
+                }
+                else
+                {
+                    m_SelectedObject = nullptr;
+                    HideAxisArrows();
+                }
             }
         }
     }
+}
+
+void Editor::ShowAxisArrows()
+{
+	const auto& arrows = m_Application.GetAllObjectsOfType<Core::AxisArrow>();
+
+    for (const auto& arrow : arrows)
+    {
+        arrow->SetVisible(true);
+	}
+}
+
+void Editor::HideAxisArrows()
+{
+	const auto& arrows = m_Application.GetAllObjectsOfType<Core::AxisArrow>();
+
+	for (const auto& arrow : arrows)
+	{
+		arrow->SetVisible(false);
+	}
 }
 
 void Editor::OnCursorPos(double xpos, double ypos)

@@ -68,10 +68,10 @@ namespace
 #define LOG_ERROR(...) LogInternal(LogLevel::Error, std::format(__VA_ARGS__))
 #define LOG_CRITICAL(...) LogInternal(LogLevel::Critical, std::format(__VA_ARGS__))
 
-#define ASSERT(condition, ...) \
+#define ASSERT(condition) \
 		do { \
 			if (!(condition)) { \
-				LOG_CRITICAL("ASSERTION FAILED: {} - {}", #condition, __VA_ARGS__) \
+				LOG_CRITICAL("ASSERTION FAILED: {}", #condition); \
 				std::abort(); \
 			} \
 		} while (false)

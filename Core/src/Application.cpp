@@ -2,9 +2,9 @@
 
 namespace Core
 {
-    void Application::Update()
+    void Application::Update(const std::shared_ptr<Object>& selectedObject)
     {
-        m_Renderer.Render(m_Objects);
+        m_Renderer.Render(m_Objects, selectedObject);
         SyncPhysicsWorld();
     }
 
@@ -37,6 +37,8 @@ namespace Core
 		m_Objects[2]->SetName("Light Cube");
 		cubeTransform = m_Objects[2]->GetComponent<Transform>();
 		cubeTransform->Z = -5.0f;
+
+
 
         SyncPhysicsWorld();
 
