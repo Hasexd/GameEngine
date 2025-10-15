@@ -5,7 +5,7 @@ namespace Core
 	AxisArrow::AxisArrow(ECS& ecs):
 		Object(ecs)
 	{
-		ASSERT_MSG(Count < 3, "There can only be a maximum of 3 axis arrows in the world.");
+		ASSERT_MSG(Count < 3, "Instantiating an object of the 'AxisArrow' class is not allowed.");
 
 		Count++;
 		MeshData meshData = Mesh::LoadFromObj(FileUtils::GetObjPath("AxisArrow"));

@@ -109,9 +109,9 @@ namespace Core
 		std::vector<std::shared_ptr<T>> results;
 		for (const auto& obj : m_Objects)
 		{
-			if (std::shared_ptr<T> casted = std::dynamic_pointer_cast<T>(obj))
+			if (std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(obj))
 			{
-				results.push_back(casted);
+				results.push_back(ptr);
 			}
 		}
 		return results;
