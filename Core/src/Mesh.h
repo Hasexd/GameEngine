@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <glad/glad.h>
 #include <vector>
 #include <filesystem>
@@ -15,24 +14,23 @@
 
 namespace Core
 {
+	struct Vertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexCoords;
+	};
 
 	struct MeshData
 	{
-		std::vector<glm::vec3> Vertices;
-		std::vector<glm::vec2> Uvs;
-		std::vector<glm::vec3> Normals;
-
-		std::vector<uint32_t> VertexIndices;
-		std::vector<uint32_t> UvIndices;
-		std::vector<uint32_t> NormalIndices;
-
-		void ToInterleaved(std::vector<float>& outVertices, std::vector<uint32_t>& outIndices) const;
+		std::vector<Vertex> Vertices;
+		std::vector<uint32_t> Indices;
 	};
 
 	struct Mesh : Component
 	{
 
-		Mesh(const std::vector<float>& vertices, const std::vector<uint32_t>& indices);
+		Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
 		Mesh(const MeshData& meshData);
 		~Mesh();
 

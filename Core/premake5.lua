@@ -19,7 +19,8 @@ project "Core"
         "vendor/glfw/src/**.c",
         "vendor/imgui/**.h",
         "vendor/imgui/**.cpp",
-        "shaders/**.glsl"
+        "vendor/obj-loader/Source/**.h",
+        "shaders/**.glsl",
     }
 
     includedirs
@@ -29,6 +30,7 @@ project "Core"
         "vendor/glad/include",
         "vendor/glfw/include",
         "vendor/imgui",
+        "vendor/obj-loader/Source"
     }
 
     links

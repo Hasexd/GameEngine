@@ -5,9 +5,24 @@ namespace Core
 	Gizmo::Gizmo(ECS& ecs, GizmoType gizmoType, GizmoAxis gizmoAxis):
 		Object(ecs), m_Type(gizmoType), m_Axis(gizmoAxis)
 	{
-		MeshData meshData = Mesh::LoadFromObj(FileUtils::GetObjPath("PositionGizmo"));
-		AddComponent<Mesh>(meshData);
+		MeshData meshData = {};
+		switch (m_Type)
+		{
+			case GizmoType::Position:
+				meshData = Mesh::LoadFromObj(FileUtils::GetObjPath("PositionGizmo"));
+				break;
+			case GizmoType::Rotation:
+				meshData = Mesh::LoadFromObj(FileUtils::GetObjPath("RotationGizmo"));
+				break;
+			case GizmoType::Scale:
+				meshData = Mesh::LoadFromObj(FileUtils::GetObjPath("ScaleGizmo"));
+				break;
+			case GizmoType::None:
+			default:
+				break;
+		}
 
+		AddComponent<Mesh>(meshData);
 		SetVisible(false);
 	}
 
