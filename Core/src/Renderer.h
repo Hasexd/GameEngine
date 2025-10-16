@@ -14,7 +14,7 @@
 #include "FileUtils.h"
 #include "Camera.h"
 #include "LightCube.h"
-#include "AxisArrow.h"
+#include "Gizmo.h"
 
 namespace Core
 {
@@ -26,6 +26,7 @@ namespace Core
 
 		void Initialize();
 		void Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject = nullptr);
+		void RenderGizmos(const std::vector<Gizmo>& gizmos, const std::shared_ptr<Object>& selectedObject);
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 

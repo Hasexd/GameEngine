@@ -13,11 +13,6 @@ Editor::Editor() :
 
 	Core::Input::SetWindow(&m_Application.GetWindowRef());
 
-
-	m_Application.AddObject<Core::AxisArrow>("X-Axis-Arrow");
-	m_Application.AddObject<Core::AxisArrow>("Y-Axis-Arrow");
-	m_Application.AddObject<Core::AxisArrow>("Z-Axis-Arrow");
-
     m_Running = true;
 }
 
@@ -79,7 +74,7 @@ void Editor::ProcessInput()
     if (Input::IsKeyPressed(KeyInput::ESCAPE))
     {
 		m_SelectedObject = nullptr;
-        HideAxisArrows();
+        m_Application.HideGizmos();
     }
 
 	if (Input::IsKeyPressed(KeyInput::CTRL) && Input::IsKeyPressed(KeyInput::R))
@@ -129,7 +124,7 @@ void Editor::RenderImGui()
         if (ImGui::Selectable(object->GetName().c_str(), isSelected))
         {
             m_SelectedObject = object;
-            ShowAxisArrows();
+            m_Application.ShowGizmos();
         }
     }
     ImGui::End();
@@ -206,36 +201,11 @@ void Editor::OnMouseButton(int button, int action, int mods)
                 if (hit.Hit)
                 {
                     m_SelectedObject = hit.Object;
-					ShowAxisArrows();
-                }
-                else
-                {
-                    m_SelectedObject = nullptr;
-                    HideAxisArrows();
+                    m_Application.ShowGizmos();
                 }
             }
         }
     }
-}
-
-void Editor::ShowAxisArrows()
-{
-	const auto& arrows = m_Application.GetAllObjectsOfType<Core::AxisArrow>();
-
-    for (const auto& arrow : arrows)
-    {
-        arrow->SetVisible(true);
-	}
-}
-
-void Editor::HideAxisArrows()
-{
-	const auto& arrows = m_Application.GetAllObjectsOfType<Core::AxisArrow>();
-
-	for (const auto& arrow : arrows)
-	{
-		arrow->SetVisible(false);
-	}
 }
 
 void Editor::OnCursorPos(double xpos, double ypos)

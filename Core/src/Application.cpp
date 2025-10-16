@@ -5,6 +5,10 @@ namespace Core
     void Application::Update(const std::shared_ptr<Object>& selectedObject)
     {
         m_Renderer.Render(m_Objects, selectedObject);
+
+        if( selectedObject)
+			m_Renderer.RenderGizmos(m_Gizmos, selectedObject);
+
         SyncPhysicsWorld();
     }
 
@@ -38,11 +42,12 @@ namespace Core
 		cubeTransform = m_Objects[2]->GetComponent<Transform>();
 		cubeTransform->Z = -5.0f;
 
-
-
         SyncPhysicsWorld();
 
-        Mesh::LoadFromObj(FileUtils::GetObjPath("cube"));
+        m_Gizmos.emplace_back(m_ECS, GizmoType::Position, GizmoAxis::X);
+		m_Gizmos.emplace_back(m_ECS, GizmoType::Position, GizmoAxis::Y);
+		m_Gizmos.emplace_back(m_ECS, GizmoType::Position, GizmoAxis::Z);
+
     }
 
     void Application::OnViewportResize(uint32_t width, uint32_t height)
@@ -119,6 +124,22 @@ namespace Core
                 }
 			});
     }
+
+    void Application::ShowGizmos()
+    {
+        for (auto& gizmo : m_Gizmos)
+        {
+            gizmo.SetVisible(true);
+		}
+    }
+
+    void Application::HideGizmos()
+    {
+        for (auto& gizmo : m_Gizmos)
+        {
+            gizmo.SetVisible(false);
+        }
+	}
 
     void Application::ReloadShaders()
     {

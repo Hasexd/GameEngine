@@ -15,7 +15,7 @@
 #include "Physics.h"
 #include "WindowEvents.h"
 #include "FileWatcher.h"
-#include "AxisArrow.h"
+#include "Gizmo.h"
 
 namespace Core
 {
@@ -54,6 +54,8 @@ namespace Core
 		Window& GetWindowRef() { return m_Window; }
 
 		void ReloadShaders();
+		void ShowGizmos();
+		void HideGizmos();
 
 	private:
 		void SyncPhysicsWorld();
@@ -68,6 +70,7 @@ namespace Core
 		std::future<void> m_FileWatcherFuture;
 
 		std::vector<std::shared_ptr<Object>> m_Objects;
+		std::vector<Gizmo> m_Gizmos;
 
 		std::vector<std::string> m_ModifiedShaderFiles;
 		std::atomic<bool> m_ShadersNeedReload = false;
@@ -80,9 +83,7 @@ namespace Core
 		std::shared_ptr<T> object = std::make_shared<T>(m_ECS);
 
 		m_Objects.push_back(object);
-
-		if constexpr (!std::is_same_v<T, AxisArrow>)
-			m_PhysicsWorld.RegisterObject(object);
+		m_PhysicsWorld.RegisterObject(object);
 
 		return object;
 	}
@@ -95,9 +96,7 @@ namespace Core
 		object->SetName(name);
 
 		m_Objects.push_back(object);
-
-		if constexpr (!std::is_same_v<T, AxisArrow>)
-			m_PhysicsWorld.RegisterObject(object);
+		m_PhysicsWorld.RegisterObject(object);
 
 		return object;
 	}
