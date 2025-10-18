@@ -26,7 +26,7 @@ namespace Core
 
 		float Distance = 0.0f;
 
-		std::shared_ptr<Object> Object = nullptr;
+		std::shared_ptr<Object> HitObject = nullptr;
 	};
 
 	class PhysicsWorld

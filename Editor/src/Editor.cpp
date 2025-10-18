@@ -23,7 +23,13 @@ void Editor::InitializeImGui()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
+    std::filesystem::path projPath = Core::FileUtils::GetEditorProjectDir();
+    std::string iniFile = projPath.string() + "/imgui.ini";
+
+    ImGui::LoadIniSettingsFromDisk(iniFile.c_str());
+
     ImGuiIO& io = ImGui::GetIO();
+
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -200,7 +206,7 @@ void Editor::OnMouseButton(int button, int action, int mods)
 
                 if (hit.Hit)
                 {
-                    m_SelectedObject = hit.Object;
+                    m_SelectedObject = hit.HitObject;
                     m_Application.ShowGizmos();
                 }
             }

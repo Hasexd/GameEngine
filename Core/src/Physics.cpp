@@ -112,7 +112,7 @@ namespace Core
 				hit.Hit = true;
 				hit.Distance = distance;
 				hit.Point = ray.Origin + ray.Direction * distance;
-				hit.Object = object;
+				hit.HitObject = object;
 
 				glm::vec3 localHit = glm::vec3(localOrigin) + localDir * (distance / scale);
 				glm::vec3 absLocalHit = glm::abs(localHit);

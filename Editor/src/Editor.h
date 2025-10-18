@@ -12,6 +12,7 @@
 #include "Transform.h"
 #include "Log.h"
 #include "Input.h"
+#include "FileUtils.h"
 
 
 class Editor : public Core::WindowEventListener
