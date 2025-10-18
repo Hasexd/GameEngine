@@ -49,5 +49,10 @@ bin/
 *.vcxproj.user
 *.sln
 
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.dir/
+
 !Core/assets/objs/*.obj
 !premake5.exe
