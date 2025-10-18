@@ -55,9 +55,9 @@ namespace Core
         m_Renderer.SetViewportSize(width, height);
     }
 
-    RaycastHit Application::Raycast(const glm::vec3& origin, const glm::vec3& direction, float maxDistance)
+    RaycastHit Application::Raycast(const Ray& ray, float maxDistance)
     {
-        return m_PhysicsWorld.Raycast(origin, direction, maxDistance);
+        return m_PhysicsWorld.Raycast(ray, maxDistance);
     }
 
     RaycastHit Application::ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight)
@@ -86,7 +86,7 @@ namespace Core
         glm::vec3 origin = camera->Position;
         glm::vec3 direction = glm::normalize(glm::vec3(worldCoords));
 
-        return Raycast(origin, direction);
+        return Raycast({ origin, direction });
     }
 
     void Application::RemoveObject(const std::shared_ptr<Object>& object)

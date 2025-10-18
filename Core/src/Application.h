@@ -33,7 +33,7 @@ namespace Core
 
 		void SetActiveCamera(const std::shared_ptr<Camera>& camera) { m_Renderer.SetActiveCamera(camera); };
 
-		RaycastHit Raycast(const glm::vec3& origin, const glm::vec3& direction, float maxDistance = FLT_MAX);
+		RaycastHit Raycast(const Ray& ray, float maxDistance = FLT_MAX);
 		RaycastHit ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight);
 
 		template<typename T>
