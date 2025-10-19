@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "FileUtils.h"
 #include "Log.h"
+#include <vector>
 
 namespace Core
 {
@@ -23,21 +24,21 @@ namespace Core
 		Z
 	};
 
-	class Gizmo : public Object
+	class Gizmo final : public Object
 	{
 	public:
-		Gizmo(ECS& ecs, GizmoType gizmoType, GizmoAxis gizmoAxis);
 		~Gizmo() override = default;
 
-		glm::mat4 GetRotation(const glm::mat4& modelMatrix) const;
-		glm::vec3 GetColor() const;
+		[[nodiscard]] glm::mat4 GetRotation(const glm::mat4& modelMatrix) const;
+		[[nodiscard]] glm::vec3 GetColor() const;
 
-		GizmoType GetType() const { return m_Type; }
-		GizmoAxis GetAxis() const { return m_Axis; }
+		[[nodiscard]] GizmoType GetType() const { return m_Type; }
+		[[nodiscard]] GizmoAxis GetAxis() const { return m_Axis; }
 
 		friend class Application;
 	private:
-
+		Gizmo(ECS& ecs, GizmoType gizmoType, GizmoAxis gizmoAxis);
+		[[nodiscard]] static Gizmo Create(ECS& ecs, GizmoType gizmoType, GizmoAxis gizmoAxis);
 	private:
 		GizmoType m_Type = GizmoType::None;
 		GizmoAxis m_Axis = GizmoAxis::None;

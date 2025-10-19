@@ -1,4 +1,5 @@
 #include "Editor.h"
+#include "Gizmo.h"
 
 Editor::Editor() :
     m_ViewportWidth(0), m_ViewportHeight(0)
@@ -43,7 +44,7 @@ void Editor::Run()
 {
     while (m_Running)
     {
-        float currentFrame = glfwGetTime();
+        const float currentFrame = static_cast<float>(glfwGetTime());
         m_DeltaTime = currentFrame - m_LastFrame;
         m_LastFrame = currentFrame;
 

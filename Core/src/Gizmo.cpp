@@ -26,6 +26,11 @@ namespace Core
 		SetVisible(false);
 	}
 
+	Gizmo Gizmo::Create(ECS& ecs, GizmoType gizmoType, GizmoAxis gizmoAxis)
+	{
+		return { ecs, gizmoType, gizmoAxis };
+	}
+
 	glm::mat4 Gizmo::GetRotation(const glm::mat4& modelMatrix) const
 	{
 		switch (m_Axis)

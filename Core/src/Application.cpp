@@ -44,10 +44,9 @@ namespace Core
 
         SyncPhysicsWorld();
 
-        m_Gizmos.emplace_back(m_ECS, GizmoType::Position, GizmoAxis::X);
-		m_Gizmos.emplace_back(m_ECS, GizmoType::Position, GizmoAxis::Y);
-		m_Gizmos.emplace_back(m_ECS, GizmoType::Position, GizmoAxis::Z);
-
+        m_Gizmos.emplace_back(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::X));
+        m_Gizmos.emplace_back(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::Y));
+        m_Gizmos.emplace_back(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::Z));
     }
 
     void Application::OnViewportResize(uint32_t width, uint32_t height)
