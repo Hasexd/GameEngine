@@ -35,6 +35,12 @@ namespace Core
 		Mesh(meshData.Vertices, meshData.Indices)
 	{}
 
+	Mesh Mesh::CreateFromObj(const std::filesystem::path& path)
+	{
+		return LoadFromObj(path);
+	}
+
+
 	Mesh::~Mesh()
 	{
 		glDeleteVertexArrays(1, &VAO);

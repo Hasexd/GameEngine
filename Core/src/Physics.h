@@ -39,13 +39,17 @@ namespace Core
 		void UpdateObjectList(const std::vector<std::shared_ptr<Object>>& objects);
 
 		RaycastHit Raycast(const Ray& ray, float maxDistance = FLT_MAX);
+		RaycastHit Raycast(const Ray& ray, const std::vector<std::shared_ptr<Object>>& objects, float maxDistance = FLT_MAX);
 
 		std::vector<std::shared_ptr<Object>> GetObjectsAtPoint(const glm::vec3& point, float radius = 0.1f);
+
+		friend class Application;
+	private:
+		RaycastHit TestRayAABB(const Ray& ray, const std::shared_ptr<Object>& object, float maxDistance);
+		bool RayAABBIntersection(const Ray& ray, const glm::vec3& boxMin, const glm::vec3& boxMax, float& distance);
 
 	private:
 		std::vector<std::shared_ptr<Object>> m_RegisteredObjects;
 
-		RaycastHit TestRayAABB(const Ray& ray, const std::shared_ptr<Object>& object, float maxDistance);
-		bool RayAABBIntersection(const Ray& ray, const glm::vec3& boxMin, const glm::vec3& boxMax, float& distance);
 	};
 }

@@ -33,8 +33,9 @@ namespace Core
 
 		void SetActiveCamera(const std::shared_ptr<Camera>& camera) { m_Renderer.SetActiveCamera(camera); };
 
-		RaycastHit Raycast(const Ray& ray, float maxDistance = FLT_MAX);
-		RaycastHit ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight);
+		RaycastHit Raycast(const Ray& ray, float maxDistance = std::numeric_limits<float>::max());
+		RaycastHit Raycast(const Ray& ray, const std::vector<std::shared_ptr<Object>>& objects, float maxDistance = std::numeric_limits<float>::max());
+		RaycastHit ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight, bool checkGizmos = false);
 
 		template<typename T>
 		requires(std::is_base_of_v<Object, T>)
@@ -70,7 +71,7 @@ namespace Core
 		std::future<void> m_FileWatcherFuture;
 
 		std::vector<std::shared_ptr<Object>> m_Objects;
-		std::vector<Gizmo> m_Gizmos;
+		std::vector<std::shared_ptr<Gizmo>> m_Gizmos;
 
 		std::vector<std::string> m_ModifiedShaderFiles;
 		std::atomic<bool> m_ShadersNeedReload = false;

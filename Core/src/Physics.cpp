@@ -48,6 +48,28 @@ namespace Core
 		return closestHit;
 	}
 
+	RaycastHit PhysicsWorld::Raycast(const Ray& ray, const std::vector<std::shared_ptr<Object>>& objects, float maxDistance)
+	{
+		RaycastHit closestHit;
+		float closestDistance = maxDistance;
+
+		for (const auto& obj : objects)
+		{
+			if (!obj)
+				continue;
+
+			RaycastHit hit = TestRayAABB(ray, obj, maxDistance);
+
+			if (hit.Hit && hit.Distance < closestDistance)
+			{
+				closestHit = hit;
+				closestDistance = hit.Distance;
+			}
+		}
+
+		return closestHit;
+	}
+
 	std::vector<std::shared_ptr<Object>> PhysicsWorld::GetObjectsAtPoint(const glm::vec3& point, float radius)
 	{
 		std::vector<std::shared_ptr<Object>> objectsAtPoint;

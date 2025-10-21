@@ -26,7 +26,7 @@ namespace Core
 
 		void Initialize();
 		void Render(const std::vector<std::shared_ptr<Object>>& objects, const std::shared_ptr<Object>& selectedObject = nullptr);
-		void RenderGizmos(const std::vector<Gizmo>& gizmos, const std::shared_ptr<Object>& selectedObject);
+		void RenderGizmos(const std::vector<std::shared_ptr<Gizmo>>& gizmos, const std::shared_ptr<Object>& selectedObject);
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 
@@ -41,6 +41,8 @@ namespace Core
 
 	private:
 		void SetupFramebuffer();
+		void RenderObject(const std::shared_ptr<Object>& object);
+		void RenderLight(const std::shared_ptr<Object>& light);
 	private:
 		uint32_t m_ViewportWidth;
 		uint32_t m_ViewportHeight;
@@ -51,7 +53,6 @@ namespace Core
 
 		glm::mat4 m_ProjectionMatrix;
 		std::shared_ptr<Object> m_LightObject = nullptr;
-
 
 		std::shared_ptr<Camera> m_ActiveCamera;
 		std::unordered_map<std::string, std::shared_ptr<Shader>> m_ShaderCache;

@@ -35,6 +35,7 @@ namespace Core
 		~Mesh();
 
 		static MeshData LoadFromObj(const std::filesystem::path& path);
+		static Mesh CreateFromObj(const std::filesystem::path & path);
 
 		unsigned int VAO, VBO, EBO;
 		size_t IndexCount;

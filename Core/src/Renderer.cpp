@@ -50,70 +50,81 @@ namespace Core
 
 			if (isDrawable && isLight)
 			{
-				const auto& lightShader = m_ShaderCache.at("light");
-
-				if (!lightShader)
-				{
-					LOG_CRITICAL("Light shader not found in the cache, unable to render.");
-					return;
-				}
-
-				m_LightObject = object;
-
-				glm::mat4 modelMatrix = object->GetModelMatrix();
-
-				lightShader->Use();
-
-				lightShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
-				lightShader->SetMatrix4("projection", m_ProjectionMatrix);
-				lightShader->SetMatrix4("model", modelMatrix);
-				lightShader->SetMatrix3("normal", object->GetNormalMatrix(modelMatrix));
-
-				object->Draw();
+				RenderLight(object);
 			} 
 			else if (isDrawable)
 			{
-				const auto& objShader = m_ShaderCache.at("object");
-
-				if (!objShader)
-				{
-					LOG_CRITICAL("Object shader not found in the cache, unable to render.");
-					return;
-				}
-
-				glm::mat4 modelMatrix = object->GetModelMatrix();
-				glm::vec3 lightPos = glm::vec3(0);
-
-				if (m_LightObject)
-				{
-					if (m_LightObject->HasComponent<Transform>())
-					{
-						const Transform* lightTransform = m_LightObject->GetComponent<Transform>();
-
-						lightPos = glm::vec3(lightTransform->X, lightTransform->Y, lightTransform->Z);
-					}
-				}
-
-				objShader->Use();
-
-				objShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
-				objShader->SetMatrix4("projection", m_ProjectionMatrix);
-				objShader->SetMatrix4("model", modelMatrix);
-				objShader->SetMatrix3("normal", object->GetNormalMatrix(modelMatrix));
-
-				objShader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
-				objShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-				objShader->SetVec3("lightPos", lightPos);
-				objShader->SetVec3("viewPos", m_ActiveCamera->Position);
-
-				object->Draw();
+				RenderObject(object);
 			}
 		}
 		if(!selectedObject)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+
+	void Renderer::RenderObject(const std::shared_ptr<Object>& object)
+	{
+		const auto& objShader = m_ShaderCache.at("object");
+
+		if (!objShader)
+		{
+			LOG_CRITICAL("Object shader not found in the cache, unable to render.");
+			return;
+		}
+
+		glm::mat4 modelMatrix = object->GetModelMatrix();
+		glm::vec3 lightPos = glm::vec3(0);
+
+		if (m_LightObject)
+		{
+			if (m_LightObject->HasComponent<Transform>())
+			{
+				const Transform* lightTransform = m_LightObject->GetComponent<Transform>();
+
+				lightPos = glm::vec3(lightTransform->X, lightTransform->Y, lightTransform->Z);
+			}
+		}
+
+		objShader->Use();
+
+		objShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
+		objShader->SetMatrix4("projection", m_ProjectionMatrix);
+		objShader->SetMatrix4("model", modelMatrix);
+		objShader->SetMatrix3("normal", object->GetNormalMatrix(modelMatrix));
+
+		objShader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+		objShader->SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		objShader->SetVec3("lightPos", lightPos);
+		objShader->SetVec3("viewPos", m_ActiveCamera->Position);
+
+		object->Draw();
+	}
+
+	void Renderer::RenderLight(const std::shared_ptr<Object>& light)
+	{
+		const auto& lightShader = m_ShaderCache.at("light");
+
+		if (!lightShader)
+		{
+			LOG_CRITICAL("Light shader not found in the cache, unable to render.");
+			return;
+		}
+
+		m_LightObject = light;
+
+		glm::mat4 modelMatrix = light->GetModelMatrix();
+
+		lightShader->Use();
+
+		lightShader->SetMatrix4("view", m_ActiveCamera->GetViewMatrix());
+		lightShader->SetMatrix4("projection", m_ProjectionMatrix);
+		lightShader->SetMatrix4("model", modelMatrix);
+		lightShader->SetMatrix3("normal", light->GetNormalMatrix(modelMatrix));
+
+		light->Draw();
+	}
+
 	
-	void Renderer::RenderGizmos(const std::vector<Gizmo>& gizmos, const std::shared_ptr<Object>& selectedObject)
+	void Renderer::RenderGizmos(const std::vector<std::shared_ptr<Gizmo>>& gizmos, const std::shared_ptr<Object>& selectedObject)
 	{
 		if (!m_ActiveCamera || !selectedObject)
 			return;
@@ -140,7 +151,7 @@ namespace Core
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 			modelMatrix = glm::translate(modelMatrix, selectedPos);
 			modelMatrix = glm::scale(modelMatrix, glm::vec3(constantScale));
-			modelMatrix = gizmo.GetRotation(modelMatrix);
+			modelMatrix = gizmo->GetRotation(modelMatrix);
 
 			gizmoShader->Use();
 
@@ -148,10 +159,10 @@ namespace Core
 			gizmoShader->SetMatrix4("projection", m_ProjectionMatrix);
 			gizmoShader->SetMatrix4("model", modelMatrix);
 
-			gizmoShader->SetVec3("axisColor", gizmo.GetColor());
+			gizmoShader->SetVec3("axisColor", gizmo->GetColor());
 
 			glDepthFunc(GL_ALWAYS);
-			gizmo.Draw();
+			gizmo->Draw();
 			glDepthFunc(GL_LESS);
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

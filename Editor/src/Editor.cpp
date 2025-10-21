@@ -198,15 +198,36 @@ void Editor::OnMouseButton(int button, int action, int mods)
             if (viewportMouseX >= 0 && viewportMouseX < m_ViewportWidth &&
                 viewportMouseY >= 0 && viewportMouseY < m_ViewportHeight)
             {
-                RaycastHit hit = m_Application.ScreenToWorldRaycast(
-                    viewportMouseX,
-                    viewportMouseY,
-                    m_ViewportWidth,
-                    m_ViewportHeight
-                );
+                RaycastHit hit = {};
+                if (m_SelectedObject)
+                {
+                    hit = m_Application.ScreenToWorldRaycast(
+                        viewportMouseX,
+                        viewportMouseY,
+                        m_ViewportWidth,
+                        m_ViewportHeight,
+                        true
+                    );
+                }
+                else
+                {
+                    hit = m_Application.ScreenToWorldRaycast(
+                        viewportMouseX,
+                        viewportMouseY,
+                        m_ViewportWidth,
+                        m_ViewportHeight
+                    );
+                }
 
                 if (hit.Hit)
                 {
+                    if (const auto& gizmo = std::dynamic_pointer_cast<Core::Gizmo>(hit.HitObject))
+                    {
+                        LOG_INFO("Trafilem gizmo");
+                        m_SelectedObject = nullptr;
+                        return;
+                    }
+
                     m_SelectedObject = hit.HitObject;
                     m_Application.ShowGizmos();
                 }

@@ -6,7 +6,7 @@ namespace Core
     {
         m_Renderer.Render(m_Objects, selectedObject);
 
-        if( selectedObject)
+        if(selectedObject)
 			m_Renderer.RenderGizmos(m_Gizmos, selectedObject);
 
         SyncPhysicsWorld();
@@ -44,9 +44,9 @@ namespace Core
 
         SyncPhysicsWorld();
 
-        m_Gizmos.emplace_back(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::X));
-        m_Gizmos.emplace_back(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::Y));
-        m_Gizmos.emplace_back(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::Z));
+        m_Gizmos.emplace_back(std::make_shared<Gizmo>(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::X)));
+        m_Gizmos.emplace_back(std::make_shared<Gizmo>(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::Y)));
+        m_Gizmos.emplace_back(std::make_shared<Gizmo>(Gizmo::Create(m_ECS, GizmoType::Position, GizmoAxis::Z)));
     }
 
     void Application::OnViewportResize(uint32_t width, uint32_t height)
@@ -59,7 +59,12 @@ namespace Core
         return m_PhysicsWorld.Raycast(ray, maxDistance);
     }
 
-    RaycastHit Application::ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight)
+    RaycastHit Application::Raycast(const Ray& ray, const std::vector<std::shared_ptr<Object>>& objects, float maxDistance)
+    {
+        return m_PhysicsWorld.Raycast(ray, objects, maxDistance);
+    }
+
+    RaycastHit Application::ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight, bool checkGizmos)
     {
         const std::shared_ptr<Camera> camera = m_Renderer.GetActiveCamera();
 
@@ -84,6 +89,12 @@ namespace Core
 
         glm::vec3 origin = camera->Position;
         glm::vec3 direction = glm::normalize(glm::vec3(worldCoords));
+
+        if (checkGizmos)
+        {
+            std::vector<std::shared_ptr<Object>> gizmoObjects(m_Gizmos.begin(), m_Gizmos.end());
+            return Raycast({origin, direction}, gizmoObjects);
+        }
 
         return Raycast({ origin, direction });
     }
@@ -126,17 +137,17 @@ namespace Core
 
     void Application::ShowGizmos()
     {
-        for (auto& gizmo : m_Gizmos)
+        for (const auto& gizmo : m_Gizmos)
         {
-            gizmo.SetVisible(true);
+            gizmo->SetVisible(true);
 		}
     }
 
     void Application::HideGizmos()
     {
-        for (auto& gizmo : m_Gizmos)
+        for (const auto& gizmo : m_Gizmos)
         {
-            gizmo.SetVisible(false);
+            gizmo->SetVisible(false);
         }
 	}
 
