@@ -43,16 +43,17 @@ namespace Core
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		for (const auto& object : objects)
-		{
-			const bool isDrawable = object->HasComponent<Transform>() && object->HasComponent<Mesh>() && object->IsVisible();
-			const bool isLight = std::dynamic_pointer_cast<LightCube>(object) != nullptr;
+		auto drawableObjects = objects | std::ranges::views::filter([](std::shared_ptr<Object> object) {
+			return object->HasComponent<Transform>() && object->HasComponent<Mesh>() && object->IsVisible();
+		});
 
-			if (isDrawable && isLight)
+		for (const auto& object : drawableObjects)
+		{
+			if (std::dynamic_pointer_cast<LightCube>(object))
 			{
 				RenderLight(object);
 			} 
-			else if (isDrawable)
+			else
 			{
 				RenderObject(object);
 			}

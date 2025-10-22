@@ -33,8 +33,8 @@ namespace Core
 
 		void SetActiveCamera(const std::shared_ptr<Camera>& camera) { m_Renderer.SetActiveCamera(camera); };
 
-		RaycastHit Raycast(const Ray& ray, float maxDistance = std::numeric_limits<float>::max());
-		RaycastHit Raycast(const Ray& ray, const std::vector<std::shared_ptr<Object>>& objects, float maxDistance = std::numeric_limits<float>::max());
+		RaycastHit Raycast(const Ray& ray, float maxDistance = FLT_MAX);
+		RaycastHit Raycast(const Ray& ray, const std::vector<std::shared_ptr<Object>>& objects, float maxDistance = FLT_MAX);
 		RaycastHit ScreenToWorldRaycast(float mouseX, float mouseY, float screenWidth, float screenHeight, bool checkGizmos = false);
 
 		template<typename T>

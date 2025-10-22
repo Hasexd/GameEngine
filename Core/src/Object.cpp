@@ -13,7 +13,7 @@ namespace Core
 	{
 		if (!HasComponent<Mesh>())
 		{
-			LOG_WARN("Object {} UUID: {} has no mesh component! Draw() returns early.", m_Name, m_UUID);
+			LOG_WARN("Object {} UUID: {} has no mesh component! Draw() returns early.", m_Name, m_UUID.ToString());
 			return;
 		}
 
@@ -28,7 +28,7 @@ namespace Core
 	{
 		if (!HasComponent<Transform>())
 		{
-			LOG_WARN("Object {} UUID: {} has no transform component! GetModelMatrix() returns 0.", m_Name, m_UUID);
+			LOG_WARN("Object {} UUID: {} has no transform component! GetModelMatrix() returns 0.", m_Name, m_UUID.ToString());
 			return glm::mat4(0.0f);
 		}
 

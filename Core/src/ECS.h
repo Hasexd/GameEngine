@@ -16,33 +16,33 @@ namespace Core
 	class ECS
 	{
 	public:
-		std::string CreateEntity();
+		UUID CreateEntity();
 
 		template<typename T, typename... Args>
 		requires(std::is_base_of_v<Component, T>)
-		T& AddComponent(std::string entity, Args&&... args);
+		T& AddComponent(UUID entity, Args&&... args);
 
 		template<typename T>
-		T* GetComponent(std::string entity);
-
-		template<typename T>
-		requires(std::is_base_of_v<Component, T>)
-		bool HasComponent(std::string entity) const;
+		T* GetComponent(UUID entity);
 
 		template<typename T>
 		requires(std::is_base_of_v<Component, T>)
-		void RemoveComponent(std::string entity);
+		bool HasComponent(UUID entity) const;
+
+		template<typename T>
+		requires(std::is_base_of_v<Component, T>)
+		void RemoveComponent(UUID entity);
 	private:
 		std::unordered_map<std::type_index,
-			std::unordered_map<std::string, std::unique_ptr<Core::Component>>> m_Components;
+			std::unordered_map<UUID, std::unique_ptr<Core::Component>>> m_Components;
 
-		std::vector<std::string> m_Entities;
+		std::vector<UUID> m_Entities;
 	};
 
 
 	template<typename T, typename... Args>
 	requires(std::is_base_of_v<Component, T>)
-	T& ECS::AddComponent(std::string entity, Args&&... args)
+	T& ECS::AddComponent(UUID entity, Args&&... args)
 	{
 		auto component = std::make_unique<T>(std::forward<Args>(args)...);
 		T* componentPtr = component.get();
@@ -53,7 +53,7 @@ namespace Core
 	}
 
 	template<typename T>
-	T* ECS::GetComponent(std::string entity)
+	T* ECS::GetComponent(UUID entity)
 	{
 		if (!HasComponent<T>(entity))
 			return nullptr;
@@ -63,7 +63,7 @@ namespace Core
 
 	template<typename T>
 	requires(std::is_base_of_v<Component, T>)
-	bool ECS::HasComponent(std::string entity) const
+	bool ECS::HasComponent(UUID entity) const
 	{
 		auto typeIt = m_Components.find(std::type_index(typeid(T)));
 
@@ -75,7 +75,7 @@ namespace Core
 
 	template<typename T>
 	requires(std::is_base_of_v<Component, T>)
-	void ECS::RemoveComponent(std::string entity)
+	void ECS::RemoveComponent(UUID entity)
 	{
 		auto typeIt = m_Components.find(std::type_index(typeid(T)));
 

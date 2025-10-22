@@ -1,8 +1,9 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
 #include <array>
+#include <ranges>
 
 #include <glad/glad.h>
 #include <mat4x2.hpp>
@@ -43,6 +44,7 @@ namespace Core
 		void SetupFramebuffer();
 		void RenderObject(const std::shared_ptr<Object>& object);
 		void RenderLight(const std::shared_ptr<Object>& light);
+
 	private:
 		uint32_t m_ViewportWidth;
 		uint32_t m_ViewportHeight;

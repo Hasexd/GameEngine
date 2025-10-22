@@ -44,7 +44,7 @@ namespace Core
 		glm::mat3 GetNormalMatrix(const glm::mat4& modelMatrix) const;
 	private:
 		ECS& m_ECS;
-		std::string m_UUID;
+		UUID m_UUID;
 		std::string m_Name;
 
 		bool m_Visible;

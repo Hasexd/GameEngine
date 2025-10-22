@@ -2,9 +2,9 @@
 
 namespace Core
 {
-	std::string ECS::CreateEntity()
+	UUID ECS::CreateEntity()
 	{
-		std::string entity = Core::GenerateUUID();
+		UUID entity;
 		m_Entities.push_back(entity);
 		return entity;
 	}

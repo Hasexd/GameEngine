@@ -5,42 +5,12 @@
 
 namespace Core
 {
-	std::string GenerateUUID()
+	UUID::UUID()
 	{
 		static thread_local std::random_device rd;
-		static thread_local std::mt19937 gen(rd());
-		static thread_local std::uniform_int_distribution<int> dis(0, 15);
-		static thread_local std::uniform_int_distribution<int> dis2(8, 11);
+		static thread_local std::mt19937_64 gen(rd());
+		static thread_local std::uniform_int_distribution<uint64_t> dis;
 
-		std::stringstream ss;
-		int i = 0;
-
-		ss << std::hex;
-
-		for (i = 0; i < 8; i++)
-			ss << dis(gen);
-
-		ss << "-";
-
-		for (i = 0; i < 4; i++)
-			ss << dis(gen);
-
-		ss << "-4";
-
-		for (i = 0; i < 3; i++)
-			ss << dis(gen);
-
-		ss << "-";
-		ss << dis2(gen);
-
-		for (i = 0; i < 3; i++)
-			ss << dis(gen);
-
-		ss << "-";
-
-		for (i = 0; i < 12; i++)
-			ss << dis(gen);
-
-		return ss.str();
+		m_UUID = dis(gen);
 	}
 }
