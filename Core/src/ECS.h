@@ -29,6 +29,10 @@ namespace Core
 		requires(std::is_base_of_v<Component, T>)
 		bool HasComponent(UUID entity) const;
 
+		template<typename... Ts>
+		requires((std::is_base_of_v<Component, Ts> && ...))
+		bool HasComponents(UUID entity) const;
+
 		template<typename T>
 		requires(std::is_base_of_v<Component, T>)
 		void RemoveComponent(UUID entity);
@@ -71,6 +75,13 @@ namespace Core
 			return false;
 
 		return typeIt->second.find(entity) != typeIt->second.end();
+	}
+
+	template<typename... Ts>
+	requires((std::is_base_of_v<Component, Ts> && ...))
+	bool ECS::HasComponents(UUID entity) const
+	{
+		return (HasComponent<Ts>(entity) && ...);
 	}
 
 	template<typename T>

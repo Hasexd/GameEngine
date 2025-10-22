@@ -29,6 +29,10 @@ namespace Core
 		requires(std::is_base_of_v<Component, T>)
 		bool HasComponent() const;
 
+		template<typename... Ts>
+		requires((std::is_base_of_v<Component, Ts> && ...))
+		bool HasComponents() const;
+
 		template<typename T>
 		requires(std::is_base_of_v<Component, T>)
 		void RemoveComponent();
@@ -69,6 +73,13 @@ namespace Core
 	bool Object::HasComponent() const
 	{
 		return m_ECS.HasComponent<T>(m_UUID);
+	}
+
+	template<typename... Ts>
+	requires((std::is_base_of_v<Component, Ts> && ...))
+	bool Object::HasComponents() const
+	{
+		return m_ECS.HasComponents<Ts...>(m_UUID);
 	}
 
 	template<typename T>

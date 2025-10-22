@@ -13,6 +13,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}-$
 
 if(MSVC)
     add_compile_options(/MP)
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+    set(PREDEFINED_TARGETS_FOLDER "CMake")
 endif()
 
 add_subdirectory(Core)

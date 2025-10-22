@@ -44,7 +44,7 @@ namespace Core
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		auto drawableObjects = objects | std::ranges::views::filter([](std::shared_ptr<Object> object) {
-			return object->HasComponent<Transform>() && object->HasComponent<Mesh>() && object->IsVisible();
+			return object->HasComponents<Transform, Mesh>() && object->IsVisible();
 		});
 
 		for (const auto& object : drawableObjects)

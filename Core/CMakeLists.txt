@@ -64,9 +64,15 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Dist")
     target_compile_definitions(Core PRIVATE DIST)
 endif()
 
-source_group("Headers" FILES ${CORE_HEADERS})
-source_group("Sources" FILES ${CORE_SOURCES})
-source_group("Shaders" FILES ${SHADERS})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "Headers" FILES ${CORE_HEADERS})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "Sources" FILES ${CORE_SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/shaders" PREFIX "Shaders" FILES ${SHADERS})
+
+source_group("Vendor\\GLM" FILES ${GLM_HEADERS})
+source_group("Vendor\\GLAD" FILES ${GLAD_SOURCES})
+source_group("Vendor\\GLFW" FILES ${GLFW_SOURCES})
+source_group("Vendor\\ImGui" FILES ${IMGUI_SOURCES} ${IMGUI_HEADERS})
+source_group("Vendor\\OBJ-Loader" FILES ${OBJ_LOADER_HEADERS})
 
 add_custom_command(TARGET Core POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:Core>/shaders

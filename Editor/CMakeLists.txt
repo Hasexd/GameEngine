@@ -19,14 +19,12 @@ target_include_directories(Editor PRIVATE
     ../Core/vendor/imgui
 )
 
-# Link libraries
 target_link_libraries(Editor PRIVATE Core)
 
 if(WIN32)
     target_link_libraries(Editor PRIVATE opengl32)
 endif()
 
-# Configuration-specific settings
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(Editor PRIVATE DEBUG)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
