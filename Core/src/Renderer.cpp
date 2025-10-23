@@ -1,6 +1,7 @@
 #include "Renderer.h"
 
 
+
 namespace Core
 {
 	void Renderer::Initialize()
@@ -97,6 +98,34 @@ namespace Core
 		objShader->SetVec3("lightPos", lightPos);
 		objShader->SetVec3("viewPos", m_ActiveCamera->Position);
 
+		Material material =
+		{
+			{1.0f, 0.5f, 0.31f},
+			{1.0f, 0.5f, 0.31f},
+			{0.5f, 0.5f, 0.5f},
+			32.0f
+		};
+
+		objShader->SetVec3("material.Ambient", material.Ambient);
+		objShader->SetVec3("material.Diffuse", material.Diffuse);
+		objShader->SetVec3("material.Specular", material.Specular);
+		objShader->SetFloat("material.Shininess", material.Shininess);
+
+		glm::vec3 lightColor =
+		{
+			sin(glfwGetTime() * 2.0f),
+			sin(glfwGetTime() * 0.7f),
+			sin(glfwGetTime() * 1.3f)
+		};
+
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+		glm::vec3 specularColor = lightColor * glm::vec3(0.2f);
+
+		objShader->SetVec3("light.Ambient", {0.2f, 0.2f, 0.2f});
+		objShader->SetVec3("light.Diffuse", diffuseColor);
+		objShader->SetVec3("light.Specular", specularColor);
+		objShader->SetVec3("light.Position", lightPos);
+
 		object->Draw();
 	}
 
@@ -112,7 +141,7 @@ namespace Core
 
 		m_LightObject = light;
 
-		glm::mat4 modelMatrix = light->GetModelMatrix();
+		const glm::mat4 modelMatrix = light->GetModelMatrix();
 
 		lightShader->Use();
 

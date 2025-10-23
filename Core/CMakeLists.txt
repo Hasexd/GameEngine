@@ -1,6 +1,8 @@
 project(Core)
 
-add_library(Core STATIC)
+add_library(Core STATIC
+        src/Material.cpp
+        src/Material.h)
 
 file(GLOB_RECURSE CORE_SOURCES "src/*.cpp")
 file(GLOB_RECURSE CORE_HEADERS "src/*.h")

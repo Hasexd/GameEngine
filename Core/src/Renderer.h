@@ -6,6 +6,7 @@
 #include <ranges>
 
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <mat4x2.hpp>
 
 #include "Object.h"
@@ -16,6 +17,8 @@
 #include "Camera.h"
 #include "LightCube.h"
 #include "Gizmo.h"
+#include "Material.h"
+
 
 namespace Core
 {
