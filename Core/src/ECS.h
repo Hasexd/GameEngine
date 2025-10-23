@@ -74,7 +74,7 @@ namespace Core
 		if (typeIt == m_Components.end())
 			return false;
 
-		return typeIt->second.find(entity) != typeIt->second.end();
+		return typeIt->second.contains(entity);
 	}
 
 	template<typename... Ts>

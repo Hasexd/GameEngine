@@ -66,7 +66,7 @@ namespace Core
 			uint32_t indexOffset = static_cast<uint32_t>(meshData.Vertices.size());
 			for (const auto& vertex : mesh.Vertices)
 			{
-				glm::vec3 position(vertex.Position.X, vertex.Position.Y, vertex.Position.Z);
+				glm::vec3 position(vertex.Position.X, -vertex.Position.Y, vertex.Position.Z);
 				glm::vec3 normal(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z);
 				glm::vec2 texCoord(vertex.TextureCoordinate.X, vertex.TextureCoordinate.Y);
 

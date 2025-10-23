@@ -120,7 +120,7 @@ void Editor::RenderImGui()
 
     m_IsViewportHovered = ImGui::IsWindowHovered();
 
-    ImGui::Image(static_cast<ImTextureID>(m_Application.GetRenderTextureID()), viewportSize);
+    ImGui::Image(m_Application.GetRenderTextureID(), viewportSize);
     ImGui::End();
     ImGui::PopStyleVar();
 
