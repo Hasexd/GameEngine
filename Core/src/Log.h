@@ -76,13 +76,13 @@ namespace
 			} \
 		} while (false)
 
-#define ASSERT_MSG(condition, message) \
+#define ASSERT_MSG(condition, ...) \
 		do { \
 			if (!(condition)) { \
-				LOG_CRITICAL("ASSERTION FAILED: {} - {}", #condition, message); \
+				LOG_CRITICAL("ASSERTION FAILED: {} - {}", #condition, std::format(__VA_ARGS__)); \
 				std::abort(); \
 			} \
-		} while(0)
+		} while(false)
 
 #else
 #define LOG_TRACE(...)
