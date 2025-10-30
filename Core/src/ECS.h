@@ -16,8 +16,6 @@ namespace Core
 	class ECS
 	{
 	public:
-		UUID CreateEntity();
-
 		template<typename T, typename... Args>
 		requires(std::is_base_of_v<Component, T>)
 		T& AddComponent(UUID entity, Args&&... args);
@@ -39,8 +37,6 @@ namespace Core
 	private:
 		std::unordered_map<std::type_index,
 			std::unordered_map<UUID, std::unique_ptr<Core::Component>>> m_Components;
-
-		std::vector<UUID> m_Entities;
 	};
 
 

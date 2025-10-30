@@ -2,12 +2,16 @@
 
 #include <glm.hpp>
 
-struct Material
+namespace Core
 {
-    glm::vec3 Ambient;
-    glm::vec3 Diffuse;
-    glm::vec3 Specular;
-    float Shininess;
-};
+    struct Material
+    {
+        glm::vec3 Ambient;
+        glm::vec3 Diffuse;
+        glm::vec3 Specular;
+        float Shininess;
+    };
+}
+
 
 

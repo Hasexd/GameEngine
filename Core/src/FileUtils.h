@@ -11,6 +11,30 @@
 
 namespace Core
 {
+	enum class TextureFormat
+	{
+		None,
+		PNG,
+		JPG,
+		JPEG
+	};
+
+	static std::string TextureFormatToExtensionString(const TextureFormat format)
+	{
+		switch (format)
+		{
+		case TextureFormat::PNG:
+			return ".png";
+		case TextureFormat::JPG:
+			return ".jpg";
+		case TextureFormat::JPEG:
+			return ".jpeg";
+		default:
+			return "";
+		}
+	}
+
+
     class FileUtils
     {
     public:
@@ -88,6 +112,11 @@ namespace Core
 		static std::string GetObjPath(const std::string& name)
 		{
 			return GetAssetsDir() + "/objs/" + name + ".obj";
+		}
+
+    	static std::string GetTexturePath(const std::string& name, const TextureFormat format)
+		{
+			return GetAssetsDir() + "/textures/" + name + TextureFormatToExtensionString(format);
 		}
     };
 }

@@ -7,6 +7,7 @@
 #include "ECS.h"
 #include "Transform.h"
 #include "Mesh.h"
+#include "UUID.h"
 
 namespace Core
 {

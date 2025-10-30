@@ -4,7 +4,7 @@
 namespace Core
 {
 	Object::Object(ECS& ecs):
-		m_ECS(ecs), m_UUID(ecs.CreateEntity()), m_Name("Object"), m_Visible(true)
+		m_ECS(ecs), m_UUID(UUID()), m_Name("Object"), m_Visible(true)
 	{
 		AddComponent<Transform>();
 	}
